@@ -1,0 +1,58 @@
+<!DOCTYPE CrossStudio_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints groups="Breakpoints" active_group="Breakpoints">
+  <BreakpointListItem trigger="" line="297" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../config/sdk_config.h" useHWbreakpoint="false"/>
+ </Breakpoints>
+ <ExecutionProfileWindow/>
+ <FrameBufferWindow>
+  <FrameBufferWindow bufferHeight="-1" addressSpace="" addressText="" bufferWidth="-1"/>
+ </FrameBufferWindow>
+ <Memory1/>
+ <Memory2/>
+ <Memory3/>
+ <Memory4/>
+ <Project>
+  <ProjectSessionItem path="pin_change_int_pca10056"/>
+  <ProjectSessionItem path="pin_change_int_pca10056;pin_change_int_pca10056"/>
+  <ProjectSessionItem path="pin_change_int_pca10056;pin_change_int_pca10056;Application"/>
+  <ProjectSessionItem path="pin_change_int_pca10056;pin_change_int_pca10056;Board Definition"/>
+  <ProjectSessionItem path="pin_change_int_pca10056;pin_change_int_pca10056;nRF_Drivers"/>
+  <ProjectSessionItem path="pin_change_int_pca10056;pin_change_int_pca10056;nRF_Libraries"/>
+  <ProjectSessionItem path="pin_change_int_pca10056;pin_change_int_pca10056;nRF_Log"/>
+ </Project>
+ <Register1/>
+ <Register2/>
+ <Register3/>
+ <Register4/>
+ <Threads>
+  <ThreadsWindow showLists=""/>
+ </Threads>
+ <TraceWindow>
+  <Trace enabled="Yes"/>
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never"/>
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never"/>
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never"/>
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never"/>
+ </Watch4>
+ <Files>
+  <SessionOpenFile windowGroup="DockEditLeft" x="2" y="56" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="42" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="64" useTextEdit="1" openedFrom="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/peripheral/pin_change_int/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/boards/pca10056.h" selected="0" top="47" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="35" y="30" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="hx711.c" selected="0" top="1" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="13" y="14" useTextEdit="1" openedFrom="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/peripheral/pin_change_int/pca10056/blank/ses/hx711.c" useBinaryEdit="0" left="0" path="hx711.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="459" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="274" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="573" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/hal/nrf_gpio.h" selected="0" top="506" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="34" y="62" useTextEdit="1" openedFrom="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/peripheral/pin_change_int/main.c" useBinaryEdit="0" left="0" path="../../../../../../integration/nrfx/legacy/nrf_drv_gpiote.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="23" y="47" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/log/src/nrf_log_backend_uart.c" selected="0" top="28" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="55" useTextEdit="1" openedFrom="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/log/src/nrf_log_backend_uart.c" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/util/app_error_weak.c" selected="0" top="38" codecName="Default"/>
+ </Files>
+ <ARMCrossStudioWindow activeProject="pin_change_int_pca10056" fileDialogDefaultFilter="*" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/uart" debugSearchPath="" autoConnectCapabilities="3199"/>
+</session>

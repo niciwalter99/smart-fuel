@@ -1,0 +1,55 @@
+<!DOCTYPE CrossStudio_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints groups="Breakpoints" active_group="Breakpoints">
+  <BreakpointListItem trigger="" line="128" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../main.c" useHWbreakpoint="false"/>
+  <BreakpointListItem trigger="" line="56" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../main.c" useHWbreakpoint="false"/>
+ </Breakpoints>
+ <ExecutionProfileWindow/>
+ <FrameBufferWindow>
+  <FrameBufferWindow bufferHeight="-1" addressSpace="" addressText="" bufferWidth="-1"/>
+ </FrameBufferWindow>
+ <Memory1/>
+ <Memory2/>
+ <Memory3/>
+ <Memory4/>
+ <Project>
+  <ProjectSessionItem path="template_pca10056"/>
+  <ProjectSessionItem path="template_pca10056;template_pca10056"/>
+  <ProjectSessionItem path="template_pca10056;template_pca10056;Application"/>
+  <ProjectSessionItem path="template_pca10056;template_pca10056;nRF_Drivers_External"/>
+  <ProjectSessionItem path="template_pca10056;template_pca10056;nRF_Log"/>
+  <ProjectSessionItem path="template_pca10056;template_pca10056;Segger Startup Files"/>
+  <ProjectSessionItem path="template_pca10056;template_pca10056;UTF8/UTF16 converter"/>
+ </Project>
+ <Register1/>
+ <Register2/>
+ <Register3/>
+ <Register4/>
+ <Threads>
+  <ThreadsWindow showLists=""/>
+ </Threads>
+ <TraceWindow>
+  <Trace enabled="Yes"/>
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never"/>
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never"/>
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never"/>
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never"/>
+ </Watch4>
+ <Files>
+  <SessionOpenFile windowGroup="DockEditLeft" x="9" y="74" useTextEdit="1" openedFrom="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/peripheral/template_project_2/hx711.c" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="209" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="39" y="7108" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="7084" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="10" y="9" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../hx711.c" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="3" y="10" useTextEdit="1" openedFrom="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/peripheral/template_project_2/hx711.c" useBinaryEdit="0" left="0" path="../../../hx711.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="9" y="58" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/bsp/bsp_btn_ble.h" selected="0" top="40" codecName="Default"/>
+ </Files>
+ <ARMCrossStudioWindow activeProject="template_pca10056" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/peripheral/template_project_2" debugSearchPath="" autoConnectCapabilities="3711"/>
+</session>
