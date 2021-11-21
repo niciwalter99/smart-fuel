@@ -7,6 +7,8 @@ Daten werden alle 5 sec gesammelt. Dies wird durch einen RTC Timer ermöglicht (
 ## Speicherung
 Bei jeder Datensammlung wird der Datenpunkt in den externen Flash (64MB) gespeichert. Dazu wird ein Struct erstellt, welcher zwei Werte speichert: Datetime u. Gewicht. Dieser Struct wird dann gespeichert. Um die RTC in eine Datetime unzuwandeln kann bspw. ähnlich dem Example https://github.com/NordicPlayground/nrf5-calendar-example die Datetime konstruiert werden.
 
+Die Daten werden max. 30 Tage gespeichert -> maximale Datenspeichermenge bei 100 Bytes pro Datenpunkt: 12(Messungen pro Minute) * 60(Stunde) * 24(Tage) * 30(Speicherung maximal) = 518 kB, welche maximal übertragen werden müssen. Bei jeder Datensynchronisierung wird die RTC Datetime synchronisiert um grobe Messfehler zu vermeiden.
+
 ## Kommunikation per BLE
 Die Daten werden beim Koppeln übertragen. Da es relativ große Datenmengen sind kann sich hierbei an das Serialization Beispiel gehalten werden (vgl. https://github.com/jimmywong2003/nrf52_ble_transfer_jpg/blob/master/ble_app_transfer_jpg/main.c oder hier: https://www.novelbits.io/bluetooth-5-speed-maximum-throughput/)
 
