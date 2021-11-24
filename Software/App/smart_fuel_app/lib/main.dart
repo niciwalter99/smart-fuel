@@ -166,7 +166,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   String getValue(value) {
 
     if (value.length != 0) {
-      int ret_value = value[0] + (value[1] << 8);
+      int ret_value = (value[0] + (value[1] << 8));
       return ret_value.toString();
     } else {
       return "No Data";
