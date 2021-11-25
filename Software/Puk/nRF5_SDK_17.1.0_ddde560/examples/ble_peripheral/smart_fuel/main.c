@@ -45,6 +45,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include "nordic_common.h"
 #include "nrf.h"
 #include "app_error.h"
@@ -63,7 +64,10 @@
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
+
 #include "hx711.h"
+#include "nrf_drv_rtc.h" //#define NRFX_TIMER0_ENABLED 1
+#include "nrf_drv_clock.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -106,6 +110,9 @@ static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        
 static uint8_t m_adv_handle = BLE_GAP_ADV_SET_HANDLE_NOT_SET;                   /**< Advertising handle used to identify an advertising set. */
 static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];                    /**< Buffer for storing an encoded advertising set. */
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];         /**< Buffer for storing an encoded scan data. */
+
+const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
+
 
 /**@brief Struct that contains pointers to the encoded advertising data. */
 static ble_gap_adv_data_t m_adv_data =
@@ -536,6 +543,46 @@ static void log_init(void)
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 }
 
+static void lfclk_config(void)
+{
+    ret_code_t err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+
+    nrf_drv_clock_lfclk_request(NULL);
+}
+
+static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
+{
+    hx711_start(true);
+    nrf_drv_rtc_counter_clear(&rtc);
+    nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+
+}
+
+/** @brief Function initialization and configuration of RTC driver instance.
+ */
+static void rtc_config(void)
+{
+    uint32_t err_code;
+
+    //Initialize RTC instance
+    nrf_drv_rtc_config_t config = NRF_DRV_RTC_DEFAULT_CONFIG;
+    config.prescaler = 4095;
+    err_code = nrf_drv_rtc_init(&rtc, &config, rtc_handler);
+    NRF_LOG_ERROR(err_code);
+    //APP_ERROR_CHECK(err_code);
+
+    ////Enable tick event & interrupt
+    ////nrf_drv_rtc_tick_enable(&rtc,true);
+
+    ////Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    APP_ERROR_CHECK(err_code);
+
+    ////Power on RTC instance
+    nrf_drv_rtc_enable(&rtc);
+}
+
 
 /**@brief Function for initializing power management.
  */
@@ -607,7 +654,13 @@ int main(void)
     log_init();
     leds_init();
     timers_init();
-    buttons_init();
+    NRF_LOG_INFO("Blinky example started.");
+
+    lfclk_config();
+    rtc_config();
+    NRF_LOG_INFO("Blinky example started.");
+
+    //buttons_init();
     power_management_init();
     ble_stack_init();
     gap_params_init();
@@ -618,14 +671,14 @@ int main(void)
 
     // Start execution.
     NRF_LOG_INFO("Blinky example started.");
+    //NRF_LOG_PROCESS();
     advertising_start();
-    hx711_start(false);
 
 
     // Enter main loop.
     for (;;)
     {
-        idle_state_handle();
+       idle_state_handle();
     }
 }
 

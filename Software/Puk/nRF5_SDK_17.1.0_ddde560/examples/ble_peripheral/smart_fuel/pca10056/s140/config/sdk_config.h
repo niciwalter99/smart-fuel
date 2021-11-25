@@ -3309,7 +3309,7 @@
 // <e> NRFX_RTC_ENABLED - nrfx_rtc - RTC peripheral driver
 //==========================================================
 #ifndef NRFX_RTC_ENABLED
-#define NRFX_RTC_ENABLED 0
+#define NRFX_RTC_ENABLED 1
 #endif
 // <q> NRFX_RTC0_ENABLED  - Enable RTC0 instance
  
@@ -3369,7 +3369,7 @@
 // <e> NRFX_RTC_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_RTC_CONFIG_LOG_ENABLED
-#define NRFX_RTC_CONFIG_LOG_ENABLED 0
+#define NRFX_RTC_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_RTC_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -3755,13 +3755,13 @@
 // <e> NRFX_SPI_ENABLED - nrfx_spi - SPI peripheral driver
 //==========================================================
 #ifndef NRFX_SPI_ENABLED
-#define NRFX_SPI_ENABLED 0
+#define NRFX_SPI_ENABLED 1
 #endif
 // <q> NRFX_SPI0_ENABLED  - Enable SPI0 instance
  
 
 #ifndef NRFX_SPI0_ENABLED
-#define NRFX_SPI0_ENABLED 0
+#define NRFX_SPI0_ENABLED 1
 #endif
 
 // <q> NRFX_SPI1_ENABLED  - Enable SPI1 instance
@@ -5408,7 +5408,7 @@
 // <e> RTC_ENABLED - nrf_drv_rtc - RTC peripheral driver - legacy layer
 //==========================================================
 #ifndef RTC_ENABLED
-#define RTC_ENABLED 0
+#define RTC_ENABLED 1
 #endif
 // <o> RTC_DEFAULT_CONFIG_FREQUENCY - Frequency  <16-32768> 
 
@@ -5445,7 +5445,7 @@
  
 
 #ifndef RTC0_ENABLED
-#define RTC0_ENABLED 0
+#define RTC0_ENABLED 1
 #endif
 
 // <q> RTC1_ENABLED  - Enable RTC1 instance
@@ -5459,7 +5459,7 @@
  
 
 #ifndef RTC2_ENABLED
-#define RTC2_ENABLED 0
+#define RTC2_ENABLED 1
 #endif
 
 // <o> NRF_MAXIMUM_LATENCY_US - Maximum possible time[us] in highest priority interrupt 
@@ -7845,7 +7845,7 @@
 // <i> Log data is buffered and can be processed in idle.
 
 #ifndef NRF_LOG_DEFERRED
-#define NRF_LOG_DEFERRED 1
+#define NRF_LOG_DEFERRED 0
 #endif
 
 // <q> NRF_LOG_FILTERS_ENABLED  - Enable dynamic filtering of logs.
@@ -8699,7 +8699,7 @@
 // <e> RTC_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef RTC_CONFIG_LOG_ENABLED
-#define RTC_CONFIG_LOG_ENABLED 0
+#define RTC_CONFIG_LOG_ENABLED 1
 #endif
 // <o> RTC_CONFIG_LOG_LEVEL  - Default Severity level
  

@@ -1,5 +1,5 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/ble_lbs.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/ble_services/ble_lbs/ble_lbs.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/ble_services/ble_lbs/ble_lbs.c \
  ../../../../../../components/libraries/util/sdk_common.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
@@ -29,7 +29,7 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/ble_lbs.o: \
  ../../../../../../components/softdevice/s140/headers/nrf_svc.h \
  ../../../../../../components/libraries/util/sdk_macros.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/ble_services/ble_lbs/ble_lbs.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/ble_services/ble_lbs/ble_lbs.h \
  ../../../../../../components/softdevice/s140/headers/ble.h \
  ../../../../../../components/softdevice/s140/headers/nrf_svc.h \
  ../../../../../../components/softdevice/s140/headers/nrf_error.h \

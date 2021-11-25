@@ -1,7 +1,7 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/SEGGER_RTT_printf.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/external/segger_rtt/SEGGER_RTT_printf.c \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/external/segger_rtt/SEGGER_RTT.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/external/segger_rtt/SEGGER_RTT_Conf.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/external/segger_rtt/SEGGER_RTT_printf.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/external/segger_rtt/SEGGER_RTT.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/external/segger_rtt/SEGGER_RTT_Conf.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../components/libraries/util/app_util_platform.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \

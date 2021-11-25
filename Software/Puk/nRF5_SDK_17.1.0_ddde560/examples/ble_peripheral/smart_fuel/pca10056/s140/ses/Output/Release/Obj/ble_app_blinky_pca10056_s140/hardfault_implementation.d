@@ -1,5 +1,5 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/hardfault_implementation.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/hardfault/hardfault_implementation.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/hardfault/hardfault_implementation.c \
  ../../../../../../components/libraries/util/sdk_common.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \

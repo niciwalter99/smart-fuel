@@ -1,5 +1,5 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_log_frontend.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/log/src/nrf_log_frontend.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/log/src/nrf_log_frontend.c \
  ../../../../../../components/libraries/util/sdk_common.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
@@ -48,7 +48,7 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_log_frontend.o: \
  ../../../../../../components/libraries/log/nrf_log_instance.h \
  ../../../../../../components/libraries/log/nrf_log_types.h \
  ../../../../../../components/libraries/log/nrf_log_types.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/log/src/nrf_log_internal.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/log/src/nrf_log_internal.h \
  ../../../../../../components/libraries/log/nrf_log_ctrl.h \
  ../../../../../../components/libraries/log/src/nrf_log_ctrl_internal.h \
  ../../../../../../components/libraries/log/nrf_log_backend_interface.h \

@@ -1,5 +1,5 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_ble_qwr.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
  ../../../../../../components/libraries/util/sdk_common.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
@@ -30,7 +30,7 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_ble_qwr.o: \
  ../../../../../../components/libraries/util/sdk_macros.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdlib.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../components/softdevice/s140/headers/ble.h \
  ../../../../../../components/softdevice/s140/headers/nrf_svc.h \

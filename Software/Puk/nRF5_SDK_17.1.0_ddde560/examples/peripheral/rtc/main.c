@@ -56,7 +56,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define COMPARE_COUNTERTIME  (3UL)                                        /**< Get Compare event COMPARE_TIME seconds after the counter starts from 0. */
+#define COMPARE_COUNTERTIME  (1UL)                                        /**< Get Compare event COMPARE_TIME seconds after the counter starts from 0. */
 
 #ifdef BSP_LED_0
     #define TICK_EVENT_OUTPUT     BSP_LED_0                                 /**< Pin number for indicating tick event. */
@@ -81,12 +81,15 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
     if (int_type == NRF_DRV_RTC_INT_COMPARE0)
     {
         nrf_gpio_pin_toggle(COMPARE_EVENT_OUTPUT);
+        nrf_drv_rtc_counter_clear(&rtc);
+        nrf_drv_rtc_cc_set(&rtc,0,COMPARE_COUNTERTIME * 8,true);
     }
     else if (int_type == NRF_DRV_RTC_INT_TICK)
     {
         nrf_gpio_pin_toggle(TICK_EVENT_OUTPUT);
     }
 }
+
 
 /** @brief Function configuring gpio for pin toggling.
  */
@@ -104,7 +107,7 @@ static void lfclk_config(void)
 
     nrf_drv_clock_lfclk_request(NULL);
 }
-
+////Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_clock.c
 /** @brief Function initialization and configuration of RTC driver instance.
  */
 static void rtc_config(void)
@@ -118,7 +121,7 @@ static void rtc_config(void)
     APP_ERROR_CHECK(err_code);
 
     //Enable tick event & interrupt
-    nrf_drv_rtc_tick_enable(&rtc,true);
+    //nrf_drv_rtc_tick_enable(&rtc,true);
 
     //Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
     err_code = nrf_drv_rtc_cc_set(&rtc,0,COMPARE_COUNTERTIME * 8,true);

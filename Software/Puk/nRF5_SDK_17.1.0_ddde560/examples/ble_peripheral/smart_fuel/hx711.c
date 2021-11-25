@@ -27,8 +27,8 @@ NRF_LOG_MODULE_REGISTER();
 #define TIMER_COMPARE             16
 
 // Pinout
-#define PD_SCK                    22   
-#define DOUT                      24    
+#define PD_SCK                    28   
+#define DOUT                      29    
 #define VDD                       20  // Note: Depending on design, GPIO may not be able to source enough current for hx711 and loadcell.    
 
 /* HX711 ADC resolution in bits */

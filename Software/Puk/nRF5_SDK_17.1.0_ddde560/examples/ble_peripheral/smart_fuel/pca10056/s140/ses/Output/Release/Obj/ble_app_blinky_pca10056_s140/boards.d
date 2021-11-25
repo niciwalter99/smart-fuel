@@ -1,6 +1,6 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/boards.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/boards/boards.c \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/boards/boards.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/boards/boards.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/boards/boards.h \
  ../../../../../../modules/nrfx/hal/nrf_gpio.h \
  ../../../../../../modules/nrfx/nrfx.h \
  ../../../../../../integration/nrfx/nrfx_config.h ../config/sdk_config.h \
@@ -53,4 +53,4 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/boards.o: \
  ../../../../../../components/softdevice/s140/headers/nrf_sd_def.h \
  ../../../../../../components/softdevice/s140/headers/nrf_soc.h \
  ../../../../../../modules/nrfx/drivers/nrfx_errors.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/boards/pca10056.h
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/boards/pca10056.h

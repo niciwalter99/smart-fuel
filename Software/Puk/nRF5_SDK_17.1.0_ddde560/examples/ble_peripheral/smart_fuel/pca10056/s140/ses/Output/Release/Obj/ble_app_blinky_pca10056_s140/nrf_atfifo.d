@@ -1,5 +1,5 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_atfifo.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/atomic_fifo/nrf_atfifo.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/atomic_fifo/nrf_atfifo.c \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/string.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/__crossworks.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
@@ -22,7 +22,7 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_atfifo.o: \
  ../../../../../../modules/nrfx/mdk/compiler_abstraction.h \
  ../../../../../../components/softdevice/s140/headers/nrf52/nrf_mbr.h \
  ../../../../../../components/softdevice/s140/headers/nrf_svc.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/atomic_fifo/nrf_atfifo.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/atomic_fifo/nrf_atfifo.h \
  ../config/sdk_config.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
@@ -31,7 +31,7 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_atfifo.o: \
  ../../../../../../components/libraries/log/nrf_log_instance.h \
  ../../../../../../components/libraries/experimental_section_vars/nrf_section.h \
  ../../../../../../components/libraries/log/nrf_log_types.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/libraries/atomic_fifo/nrf_atfifo_internal.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/atomic_fifo/nrf_atfifo_internal.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/util/sdk_common.h \
  ../../../../../../components/libraries/util/sdk_os.h \

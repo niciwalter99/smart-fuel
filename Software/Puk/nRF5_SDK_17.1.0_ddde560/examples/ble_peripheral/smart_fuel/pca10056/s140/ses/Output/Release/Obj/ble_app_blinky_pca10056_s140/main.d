@@ -1,8 +1,9 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/main.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/ble_app_blinky/main.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/main.c \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/string.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/__crossworks.h \
+ /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../modules/nrfx/mdk/nrf.h \
  ../../../../../../modules/nrfx/mdk/nrf52840.h \
@@ -18,7 +19,6 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/main.o: \
  ../../../../../../modules/nrfx/mdk/compiler_abstraction.h \
  ../../../../../../components/libraries/util/app_error.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdio.h \
- /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
  ../../../../../../components/libraries/util/sdk_errors.h \
  ../../../../../../components/softdevice/s140/headers/nrf_error.h \
  ../../../../../../components/libraries/util/nordic_common.h \
@@ -94,7 +94,14 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/main.o: \
  ../../../../../../components/ble/nrf_ble_gatt/nrf_ble_gatt.h \
  ../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  ../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/ble_app_blinky/hx711.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.h \
+ ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
+ ../../../../../../modules/nrfx/hal/nrf_rtc.h \
+ ../../../../../../integration/nrfx/legacy/nrf_drv_clock.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_clock.h \
+ ../../../../../../modules/nrfx/hal/nrf_clock.h \
+ ../../../../../../modules/nrfx/drivers/include/nrfx_power_clock.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/strerror/nrf_strerror.h \
  ../../../../../../components/libraries/log/src/nrf_log_internal.h \

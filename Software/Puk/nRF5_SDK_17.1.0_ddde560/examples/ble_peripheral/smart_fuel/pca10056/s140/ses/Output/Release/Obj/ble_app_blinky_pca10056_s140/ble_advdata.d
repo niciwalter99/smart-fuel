@@ -1,6 +1,6 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/ble_advdata.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/common/ble_advdata.c \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/common/ble_advdata.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/common/ble_advdata.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/common/ble_advdata.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/string.h \
@@ -43,7 +43,7 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/ble_advdata.o: \
  ../../../../../../components/libraries/util/sdk_macros.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
  ../../../../../../components/softdevice/s140/headers/ble_gap.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/components/ble/common/ble_srv_common.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/common/ble_srv_common.h \
  ../../../../../../components/softdevice/s140/headers/ble_types.h \
  ../../../../../../components/libraries/util/app_util.h \
  ../../../../../../components/softdevice/s140/headers/ble_gatt.h

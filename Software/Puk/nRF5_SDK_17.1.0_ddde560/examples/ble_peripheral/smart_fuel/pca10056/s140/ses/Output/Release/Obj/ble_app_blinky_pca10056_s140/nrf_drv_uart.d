@@ -1,6 +1,6 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_drv_uart.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_uart.c \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_uart.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_uart.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_uart.h \
  ../../../../../../modules/nrfx/nrfx.h \
  ../../../../../../integration/nrfx/nrfx_config.h ../config/sdk_config.h \
  ../../../../../../modules/nrfx/drivers/nrfx_common.h \

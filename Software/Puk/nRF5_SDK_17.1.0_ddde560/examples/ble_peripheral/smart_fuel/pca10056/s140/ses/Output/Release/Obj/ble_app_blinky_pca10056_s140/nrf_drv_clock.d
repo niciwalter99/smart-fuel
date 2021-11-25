@@ -1,7 +1,7 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/nrf_drv_clock.o: \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_clock.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_clock.c \
  ../../../../../../components/libraries/util/nordic_common.h \
- /Users/nicolaswalter/Downloads/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_clock.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_clock.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_clock.h \
  ../../../../../../modules/nrfx/nrfx.h \
  ../../../../../../integration/nrfx/nrfx_config.h ../config/sdk_config.h \
