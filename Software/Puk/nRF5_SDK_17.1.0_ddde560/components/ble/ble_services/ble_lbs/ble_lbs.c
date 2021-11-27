@@ -80,10 +80,19 @@ void ble_lbs_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GATTS_EVT_WRITE:
+            NRF_LOG_INFO("Write");
             on_write(p_lbs, p_ble_evt);
             break;
-
+        case BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP:
+            NRF_LOG_INFO("Read Data");
+            NRF_LOG_INFO("Read Data");
+            NRF_LOG_INFO("Read Data");
+            NRF_LOG_INFO("Read Data");
+            NRF_LOG_INFO("Read Data");
+            NRF_LOG_INFO("Read Data");
+            break;
         default:
+             NRF_LOG_INFO(" Default Data");  
             // No implementation needed.
             break;
     }
@@ -143,6 +152,23 @@ uint32_t ble_lbs_init(ble_lbs_t * p_lbs, const ble_lbs_init_t * p_lbs_init)
     add_char_params.write_access = SEC_OPEN;
 
     return characteristic_add(p_lbs->service_handle, &add_char_params, &p_lbs->led_char_handles);
+}
+
+uint32_t get_data_information(uint16_t conn_handle, ble_lbs_t * p_lbs) {
+
+    uint16_t button_state = 42;
+    ble_gatts_hvx_params_t params;
+    uint16_t len = sizeof(button_state);
+
+    memset(&params, 0, sizeof(params));
+    params.type   = BLE_GATT_HVX_NOTIFICATION;
+    params.handle = p_lbs->led_char_handles.value_handle;
+    params.p_data = &button_state;
+    params.p_len  = &len;
+
+    NRF_LOG_INFO("Send value %d", *params.p_data);
+
+    return sd_ble_gatts_hvx(conn_handle, &params);
 }
 
 

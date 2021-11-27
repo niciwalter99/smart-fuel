@@ -45,10 +45,10 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="40" y="291" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="266" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="42" y="50" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_smart_fuel_data/main.c" useBinaryEdit="0" left="0" path="../../../fds_example.h" selected="0" top="33" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="51" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="23" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="65" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_smart_fuel_data/main.c" useBinaryEdit="0" left="0" path="../../../fds_example.h" selected="0" top="33" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="11" y="2121" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_smart_fuel_data/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/fds/fds.c" selected="0" top="2097" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="106" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_smart_fuel_data/main.c" useBinaryEdit="0" left="0" path="../../../cli.c" selected="0" top="82" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="94" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_smart_fuel_data/fds_example.h" useBinaryEdit="0" left="0" path="../../../cli.c" selected="0" top="82" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="11" y="2807" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_smart_fuel_data/cli.c" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/cli/nrf_cli.c" selected="0" top="2783" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="flash_fds_s140_pca10056" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="" debugSearchPath="" autoConnectCapabilities="3711"/>

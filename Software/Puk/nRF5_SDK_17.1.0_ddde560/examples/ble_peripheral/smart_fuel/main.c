@@ -68,6 +68,8 @@
 #include "hx711.h"
 #include "nrf_drv_rtc.h" //#define NRFX_TIMER0_ENABLED 1
 #include "nrf_drv_clock.h"
+#include "storage.h"
+
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -472,8 +474,8 @@ static void ble_stack_init(void)
     err_code = nrf_sdh_enable_request();
     APP_ERROR_CHECK(err_code);
 
-    // Configure the BLE stack using the default settings.
-    // Fetch the start address of the application RAM.
+     //Configure the BLE stack using the default settings.
+     //Fetch the start address of the application RAM.
     uint32_t ram_start = 0;
     err_code = nrf_sdh_ble_default_cfg_set(APP_BLE_CONN_CFG_TAG, &ram_start);
     APP_ERROR_CHECK(err_code);
@@ -631,6 +633,7 @@ void hx711_callback(hx711_evt_t evt, int value)
             weigth = value_with_offset / 216;
           } 
           ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
+          get_data_information(m_conn_handle, &m_lbs);
           NRF_LOG_INFO("ADC measuremement %d", weigth);
         }
     }
@@ -660,20 +663,29 @@ int main(void)
     rtc_config();
     NRF_LOG_INFO("Blinky example started.");
 
-    //buttons_init();
-    power_management_init();
     ble_stack_init();
+    NRF_LOG_INFO("Init Storage");
+    storage_init();
+    NRF_LOG_INFO("write boot count");
+    write_boot_count();
+    NRF_LOG_INFO("get boot ocunt");
+    uint8_t boot_count[4000];
+    uint8_t *p = get_boot_count(boot_count);
+    NRF_LOG_INFO("Get Boot Count %d", p[0]);
+    NRF_LOG_INFO("Get Boot Count %d", p[1]);
+
+    power_management_init();
+    buttons_init();
     gap_params_init();
     gatt_init();
     services_init();
     advertising_init();
     conn_params_init();
-
+  
     // Start execution.
     NRF_LOG_INFO("Blinky example started.");
     //NRF_LOG_PROCESS();
     advertising_start();
-
 
     // Enter main loop.
     for (;;)
