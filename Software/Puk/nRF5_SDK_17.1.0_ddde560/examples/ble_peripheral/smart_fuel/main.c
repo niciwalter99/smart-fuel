@@ -64,6 +64,7 @@
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
+#include "nrf_delay.h"
 
 #include "hx711.h"
 #include "nrf_drv_rtc.h" //#define NRFX_TIMER0_ENABLED 1
@@ -89,8 +90,8 @@
 #define APP_ADV_DURATION                BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED   /**< The advertising time-out (in units of seconds). When set to 0, we will never time out. */
 
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(100, UNIT_1_25_MS)        /**< Minimum acceptable connection interval (0.5 seconds). */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(200, UNIT_1_25_MS)        /**< Maximum acceptable connection interval (1 second). */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(15, UNIT_1_25_MS)        /**< Minimum acceptable connection interval now4s (0.5 seconds). */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(15, UNIT_1_25_MS)        /**< Maximum acceptable connection interval (1 second). */
 #define SLAVE_LATENCY                   0                                       /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)         /**< Connection supervisory time-out (4 seconds). */
 
@@ -114,6 +115,8 @@ static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];                    
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];         /**< Buffer for storing an encoded scan data. */
 
 const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
+static uint32_t index_for_send = 0;
+static int tx_success = 0;
 
 
 /**@brief Struct that contains pointers to the encoded advertising data. */
@@ -270,6 +273,29 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
     APP_ERROR_HANDLER(nrf_error);
 }
 
+static void send_data() {
+  
+  if(index_for_send < 500) {
+    //NRF_LOG_INFO("Send Index %d", index_for_send);
+    uint32_t ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send);
+          if(ret != NRF_SUCCESS) 
+            NRF_LOG_ERROR("ERROR SENDING");
+    ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send +1);
+          if(ret != NRF_SUCCESS) 
+            NRF_LOG_ERROR("ERROR SENDING");
+   ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send + 2);
+          if(ret != NRF_SUCCESS) 
+            NRF_LOG_ERROR("ERROR SENDING");
+    ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send + 3);
+          if(ret != NRF_SUCCESS) 
+            NRF_LOG_ERROR("ERROR SENDING");
+
+   index_for_send += 4;
+   } else {
+    index_for_send = 0;
+   }
+}
+
 
 /**@brief Function for handling write events to the LED characteristic.
  *
@@ -278,6 +304,16 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
  */
 static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t led_state)
 {
+    uint32_t ret;
+
+    NRF_LOG_INFO("Send Something");
+        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
+        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
+        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
+        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
+        if(ret != NRF_SUCCESS) 
+          NRF_LOG_ERROR("ERROR SENDING");
+           
     if (led_state)
     {
         bsp_board_led_on(LEDBUTTON_LED);
@@ -381,6 +417,8 @@ static void advertising_start(void)
     bsp_board_led_on(ADVERTISING_LED);
 }
 
+static bool connected = false;
+static bool dataSend = false;
 
 /**@brief Function for handling BLE events.
  *
@@ -397,14 +435,28 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             NRF_LOG_INFO("Connected");
             bsp_board_led_on(CONNECTED_LED);
             bsp_board_led_off(ADVERTISING_LED);
+            connected = true;
+            dataSend = false;
+            index_for_send = 0;
+
+            NRF_LOG_INFO("Send Data");
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, m_conn_handle);
             APP_ERROR_CHECK(err_code);
             err_code = app_button_enable();
             APP_ERROR_CHECK(err_code);
+
+            ble_gap_phys_t const phys =
+            {
+                .rx_phys = BLE_GAP_PHY_2MBPS,
+                .tx_phys = BLE_GAP_PHY_2MBPS,
+            };
+            err_code = sd_ble_gap_phy_update(p_ble_evt->evt.gap_evt.conn_handle, &phys);
+            APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
+            connected = false;
             NRF_LOG_INFO("Disconnected");
             bsp_board_led_off(CONNECTED_LED);
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -455,6 +507,15 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
                                              BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             APP_ERROR_CHECK(err_code);
             break;
+
+       case BLE_GATTS_EVT_HVN_TX_COMPLETE:
+            tx_success++;
+            if(tx_success > 3){
+              tx_success = 0;
+              send_data();
+              }
+            break;
+
 
         default:
             // No implementation needed.
@@ -614,6 +675,29 @@ static uint32_t hx711_offset = 0;
 void hx711_callback(hx711_evt_t evt, int value)
 {
     uint16_t length = sizeof(int);
+
+    //if(connected) {
+    //uint32_t        err_code;
+
+    // err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 44);
+    // if (err_code != NRF_SUCCESS) 
+    //    {
+    //        NRF_LOG_ERROR("FAIL SEND");
+    //    }
+    //     nrf_delay_ms(200);
+    // err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 45);
+    //  if (err_code != NRF_SUCCESS) 
+    //    {
+    //        NRF_LOG_ERROR("FAIL SEND");
+    //    }
+    // nrf_delay_ms(200);
+    // err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 46);
+    //  if (err_code != NRF_SUCCESS) 
+    //    {
+    //        NRF_LOG_ERROR("FAIL SEND");
+    //    }
+    //   }
+    //    nrf_delay_ms(200);
     
     if(evt == DATA_READY)
     {
@@ -632,8 +716,8 @@ void hx711_callback(hx711_evt_t evt, int value)
           if (value_with_offset > 0) {
             weigth = value_with_offset / 216;
           } 
-          ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
-          get_data_information(m_conn_handle, &m_lbs);
+          //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
+          //get_data_information(m_conn_handle, &m_lbs);
           NRF_LOG_INFO("ADC measuremement %d", weigth);
         }
     }
@@ -646,6 +730,13 @@ void hx711_callback(hx711_evt_t evt, int value)
     }
 }
 
+static void send_Data() {
+     ble_lbs_on_button_change(m_conn_handle, &m_lbs, 44);
+     ble_lbs_on_button_change(m_conn_handle, &m_lbs, 45);
+     ble_lbs_on_button_change(m_conn_handle, &m_lbs, 46);
+     dataSend = true;
+
+}
 
 
 /**@brief Function for application main entry.
@@ -665,14 +756,14 @@ int main(void)
 
     ble_stack_init();
     NRF_LOG_INFO("Init Storage");
-    storage_init();
-    NRF_LOG_INFO("write boot count");
-    write_boot_count();
-    NRF_LOG_INFO("get boot ocunt");
-    uint8_t boot_count[4000];
-    uint8_t *p = get_boot_count(boot_count);
-    NRF_LOG_INFO("Get Boot Count %d", p[0]);
-    NRF_LOG_INFO("Get Boot Count %d", p[1]);
+    //storage_init();
+    //NRF_LOG_INFO("write boot count");
+    //write_boot_count();
+    //NRF_LOG_INFO("get boot ocunt");
+    //uint8_t boot_count[4000];
+    //uint8_t *p = get_boot_count(boot_count);
+    //NRF_LOG_INFO("Get Boot Count %d", p[0]);
+    //NRF_LOG_INFO("Get Boot Count %d", p[1]);
 
     power_management_init();
     buttons_init();

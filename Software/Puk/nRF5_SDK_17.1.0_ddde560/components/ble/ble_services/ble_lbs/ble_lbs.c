@@ -63,11 +63,23 @@ NRF_LOG_MODULE_REGISTER();
 static void on_write(ble_lbs_t * p_lbs, ble_evt_t const * p_ble_evt)
 {
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
+    NRF_LOG_INFO("WRITTE DATA");
 
+    if ((p_evt_write->handle == p_lbs->button_char_handles.value_handle)
+        && (p_evt_write->len == 1))
+        NRF_LOG_INFO("Data ready");
+        NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
+        if(p_evt_write->data[0] == 2) {  //Write 1
+        NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
+        NRF_LOG_INFO("Write the DaTATAAAAAAAAAAAAA");
+           p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, p_evt_write->data[0]);
+        
+        }
     if (   (p_evt_write->handle == p_lbs->led_char_handles.value_handle)
         && (p_evt_write->len == 1)
         && (p_lbs->led_write_handler != NULL))
     {
+        NRF_LOG_INFO("Data ready");
         p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, p_evt_write->data[0]);
     }
 }
@@ -83,16 +95,7 @@ void ble_lbs_on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context)
             NRF_LOG_INFO("Write");
             on_write(p_lbs, p_ble_evt);
             break;
-        case BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP:
-            NRF_LOG_INFO("Read Data");
-            NRF_LOG_INFO("Read Data");
-            NRF_LOG_INFO("Read Data");
-            NRF_LOG_INFO("Read Data");
-            NRF_LOG_INFO("Read Data");
-            NRF_LOG_INFO("Read Data");
-            break;
         default:
-             NRF_LOG_INFO(" Default Data");  
             // No implementation needed.
             break;
     }
@@ -123,13 +126,15 @@ uint32_t ble_lbs_init(ble_lbs_t * p_lbs, const ble_lbs_init_t * p_lbs_init)
     memset(&add_char_params, 0, sizeof(add_char_params));
     add_char_params.uuid              = LBS_UUID_BUTTON_CHAR;
     add_char_params.uuid_type         = p_lbs->uuid_type;
-    add_char_params.init_len          = sizeof(uint32_t);
-    add_char_params.max_len           = sizeof(uint32_t);
+    add_char_params.init_len          = sizeof(uint64_t);
+    add_char_params.max_len           = sizeof(uint64_t);
     add_char_params.char_props.read   = 1;
     add_char_params.char_props.notify = 1;
+    add_char_params.char_props.write  = 1;
 
     add_char_params.read_access       = SEC_OPEN;
     add_char_params.cccd_write_access = SEC_OPEN;
+    add_char_params.write_access = SEC_OPEN;
 
     err_code = characteristic_add(p_lbs->service_handle,
                                   &add_char_params,
@@ -172,7 +177,7 @@ uint32_t get_data_information(uint16_t conn_handle, ble_lbs_t * p_lbs) {
 }
 
 
-uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_lbs_t * p_lbs, uint32_t button_state)
+uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_lbs_t * p_lbs, uint64_t button_state)
 {
 
     ble_gatts_hvx_params_t params;

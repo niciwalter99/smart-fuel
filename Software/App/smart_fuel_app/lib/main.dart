@@ -166,7 +166,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
   String getValue(value) {
 
     if (value.length != 0) {
+
       int ret_value = (value[0] + (value[1] << 8));
+      print("Return Value");
+      print(ret_value.toString());
       return ret_value.toString();
     } else {
       return "No Data";
@@ -195,6 +198,25 @@ class _DeviceScreenState extends State<DeviceScreen> {
         characteristic.setNotifyValue(true);
       }
     }
+    print("INit");
+
+    _readData(characteristic) async {
+      characteristic.value.listen((value) {
+        List<int> readData = new List.from(value);
+
+        if (readData.isNotEmpty && readData != []) {
+          print('BLE read data1: $readData');
+        }
+      });
+    }
+
+      _readData(characteristic);
+    return TextButton(
+      onPressed: () {
+        characteristic.write([2]);
+      },
+      child: Text("TEXT BUTTON"),
+    );
     return StreamBuilder<List<int>>(
       stream: characteristic.value,
       initialData: characteristic.lastValue,

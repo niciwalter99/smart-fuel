@@ -39,7 +39,7 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="26" y="630" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="599" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="26" y="630" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="482" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="7" y="7769" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="7717" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="23" y="24" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../hx711.c" selected="0" top="0" codecName="Default"/>
  </Files>
