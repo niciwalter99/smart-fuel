@@ -290,7 +290,7 @@ typedef struct
   uint8_t           type;               /**< Indication or Notification, see @ref BLE_GATT_HVX_TYPES. */
   uint16_t          offset;             /**< Offset within the attribute value. */
   uint16_t         *p_len;              /**< Length in bytes to be written, length in bytes written after return. */
-  uint64_t const    *p_data;             /**< Actual data content, use NULL to use the current attribute value. */
+  uint8_t const    *p_data;             /**< Actual data content, use NULL to use the current attribute value. */
 } ble_gatts_hvx_params_t;
 
 /**@brief GATT Authorization parameters. */

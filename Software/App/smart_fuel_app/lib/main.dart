@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_blue_localnotify/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:convert';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
@@ -199,6 +200,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
       }
     }
     print("INit");
+    var lists = [];
 
     _readData(characteristic) async {
       characteristic.value.listen((value) {
@@ -206,17 +208,49 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
         if (readData.isNotEmpty && readData != []) {
           print('BLE read data1: $readData');
+          lists.add(readData);
         }
       });
     }
+    _readData(characteristic);
 
-      _readData(characteristic);
-    return TextButton(
-      onPressed: () {
-        characteristic.write([2]);
-      },
-      child: Text("TEXT BUTTON"),
-    );
+   /* return Column(
+        children: <Widget>[
+          TextButton(
+              child: Text("Get Data"),
+              onPressed: () => characteristic.write([2]),
+          ),
+          TextButton(
+            onPressed:
+                  () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Received Data from Bottle'),
+                  content: Text(lists.toString().replaceAll("[", "\n\n")),
+                  scrollable: true,
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+                  ),
+              //characteristic.write([2]);
+            child: Text("See Incoming Data"),
+          ),
+          TextButton(
+            child: Text("Delete Data"),
+            onPressed: () => {lists=[]},
+          ),
+
+    ],
+    );*/
+
     return StreamBuilder<List<int>>(
       stream: characteristic.value,
       initialData: characteristic.lastValue,
@@ -241,30 +275,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
       },
     );
-
-    /*return ServiceTile(
-            service: s,
-            characteristicTiles: s.characteristics
-                .map(
-                  (c) => CharacteristicTile(
-                    characteristic: c,
-                    onReadPressed: () => c.read(),
-                    onWritePressed: () => c.write([1]),
-                    onNotificationPressed: () =>
-                        c.setNotifyValue(!c.isNotifying),
-                    descriptorTiles: c.descriptors
-                        .map(
-                          (d) => DescriptorTile(
-                            descriptor: d,
-                            onReadPressed: () => d.read(),
-                            onWritePressed: () => d.write([11, 12]),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                )
-                .toList(),
-          );*/
   }
 
   @override

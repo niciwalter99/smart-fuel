@@ -68,7 +68,6 @@ static void on_write(ble_lbs_t * p_lbs, ble_evt_t const * p_ble_evt)
     if ((p_evt_write->handle == p_lbs->button_char_handles.value_handle)
         && (p_evt_write->len == 1))
         NRF_LOG_INFO("Data ready");
-        NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
         if(p_evt_write->data[0] == 2) {  //Write 1
         NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
         NRF_LOG_INFO("Write the DaTATAAAAAAAAAAAAA");
@@ -126,8 +125,8 @@ uint32_t ble_lbs_init(ble_lbs_t * p_lbs, const ble_lbs_init_t * p_lbs_init)
     memset(&add_char_params, 0, sizeof(add_char_params));
     add_char_params.uuid              = LBS_UUID_BUTTON_CHAR;
     add_char_params.uuid_type         = p_lbs->uuid_type;
-    add_char_params.init_len          = sizeof(uint64_t);
-    add_char_params.max_len           = sizeof(uint64_t);
+    add_char_params.init_len          = 244;//sizeof(uint64_t) + sizeof(uint64_t);
+    add_char_params.max_len           = 244;//sizeof(uint64_t) + sizeof(uint64_t);
     add_char_params.char_props.read   = 1;
     add_char_params.char_props.notify = 1;
     add_char_params.char_props.write  = 1;
@@ -177,20 +176,32 @@ uint32_t get_data_information(uint16_t conn_handle, ble_lbs_t * p_lbs) {
 }
 
 
-uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_lbs_t * p_lbs, uint64_t button_state)
+uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t* button_state)
 {
+    
+    uint8_t t[200];// = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
+    for(int i = 0; i< 200; i++) {
+      t[i] = i;
+     // NRF_LOG_INFO("Item is %d", button_state[i]);
+    }
 
     ble_gatts_hvx_params_t params;
-    uint16_t len = sizeof(button_state);
+    uint16_t len = 200; //sizeof(t);//(button_state);
+
 
     memset(&params, 0, sizeof(params));
     params.type   = BLE_GATT_HVX_NOTIFICATION;
     params.handle = p_lbs->button_char_handles.value_handle;
-    params.p_data = &button_state;
+    params.p_data = button_state;
     params.p_len  = &len;
 
-    NRF_LOG_INFO("Send value %d", *params.p_data);
+    NRF_LOG_INFO("Send Value %d",button_state[0]);
 
-    return sd_ble_gatts_hvx(conn_handle, &params);
+    uint32_t ret = sd_ble_gatts_hvx(conn_handle, &params);
+    if(ret != NRF_SUCCESS && ret !=NRF_ERROR_RESOURCES) 
+    {
+    NRF_LOG_ERROR("ERROR SEND %d", ret);
+    }
+    return ret;
 }
 #endif // NRF_MODULE_ENABLED(BLE_LBS)

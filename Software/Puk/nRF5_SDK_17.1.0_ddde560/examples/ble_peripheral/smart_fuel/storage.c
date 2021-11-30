@@ -26,7 +26,7 @@ static void power_manage(void)
 static configuration_t m_dummy_cfg =
 {
     .index  = 0,
-    .weigth  = {1,2},
+    .weigth  = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1},
     .datetime = "dummy",
 };
 
@@ -252,11 +252,12 @@ if (rc == NRF_SUCCESS)
     nrf_delay_ms(10);
 }
   
-uint8_t* get_boot_count(uint8_t* boot_count)  {
+uint8_t* get_boot_count()  {
     fds_record_desc_t desc = {0};
     fds_find_token_t  tok  = {0};
     uint32_t count;
 
+    NRF_LOG_INFO("Get Record");
     while (fds_record_find(CONFIG_FILE, CONFIG_REC_KEY, &desc, &tok) == NRF_SUCCESS)
     {
         ret_code_t rc;

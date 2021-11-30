@@ -23,7 +23,7 @@ SECTIONS
   {
     __reserved_ram_start__ = .;
     *(.reserved_ram .reserved_ram.*)
-    . = MAX(__reserved_ram_start__ + 0x20002300-0x20000000 , .);
+    . = MAX(__reserved_ram_start__ + 0x20002C80-0x20000000 , .);
   }
   __reserved_ram_end__ = __reserved_ram_start__ + SIZEOF(.reserved_ram);
   __reserved_ram_size__ = SIZEOF(.reserved_ram);
@@ -31,8 +31,8 @@ SECTIONS
 
   . = ASSERT(__reserved_ram_start__ == __reserved_ram_end__ || (__reserved_ram_end__ - __RAM1_segment_start__) <= __RAM1_segment_size__ , "error: .reserved_ram is too large to fit in RAM1 memory segment");
 
-  __vectors_ram_load_start__ = 0x20002300;
-  .vectors_ram 0x20002300 (NOLOAD) : AT(0x20002300)
+  __vectors_ram_load_start__ = 0x20002C80;
+  .vectors_ram 0x20002C80 (NOLOAD) : AT(0x20002C80)
   {
     __vectors_ram_start__ = .;
     __app_ram_start__ =   __vectors_ram_start__;

@@ -90,8 +90,8 @@
 #define APP_ADV_DURATION                BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED   /**< The advertising time-out (in units of seconds). When set to 0, we will never time out. */
 
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(15, UNIT_1_25_MS)        /**< Minimum acceptable connection interval now4s (0.5 seconds). */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(15, UNIT_1_25_MS)        /**< Maximum acceptable connection interval (1 second). */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)        /**< Minimum acceptable connection interval now4s (0.5 seconds). */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(30, UNIT_1_25_MS)        /**< Maximum acceptable connection interval (1 second). */
 #define SLAVE_LATENCY                   0                                       /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)         /**< Connection supervisory time-out (4 seconds). */
 
@@ -115,8 +115,11 @@ static uint8_t m_enc_advdata[BLE_GAP_ADV_SET_DATA_SIZE_MAX];                    
 static uint8_t m_enc_scan_response_data[BLE_GAP_ADV_SET_DATA_SIZE_MAX];         /**< Buffer for storing an encoded scan data. */
 
 const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
+static uint8_t packet_size = 0;
 static uint32_t index_for_send = 0;
 static int tx_success = 0;
+static uint8_t *data_packet_for_send = 0;
+static uint8_t packets_sent = 0;
 
 
 /**@brief Struct that contains pointers to the encoded advertising data. */
@@ -274,25 +277,35 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 }
 
 static void send_data() {
-  
-  if(index_for_send < 500) {
-    //NRF_LOG_INFO("Send Index %d", index_for_send);
-    uint32_t ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send);
-          if(ret != NRF_SUCCESS) 
-            NRF_LOG_ERROR("ERROR SENDING");
-    ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send +1);
-          if(ret != NRF_SUCCESS) 
-            NRF_LOG_ERROR("ERROR SENDING");
-   ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send + 2);
-          if(ret != NRF_SUCCESS) 
-            NRF_LOG_ERROR("ERROR SENDING");
-    ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, index_for_send + 3);
-          if(ret != NRF_SUCCESS) 
-            NRF_LOG_ERROR("ERROR SENDING");
+  uint8_t t[200] = {12,42};
+  packet_size = 0;
 
-   index_for_send += 4;
-   } else {
-    index_for_send = 0;
+  
+  
+  if(index_for_send < 20) {
+    while(true) {
+      if(packets_sent > 3) {
+        break;
+      }
+      uint8_t packet[200];
+      for(int i=0; i < 200; i++) {
+        packet[i] = data_packet_for_send[packets_sent*200 + i];
+      }
+      uint32_t ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
+          if(ret == NRF_ERROR_RESOURCES){
+          // Queue is full
+            break;
+           }
+           else if(ret != NRF_SUCCESS){
+             NRF_LOG_ERROR("ERROR SENDING");
+             break;
+           }
+
+           // Packet is succesfully queued
+           packet_size++;
+           index_for_send++;
+           packets_sent++;
+      }
    }
 }
 
@@ -306,11 +319,20 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t l
 {
     uint32_t ret;
 
+    data_packet_for_send = get_boot_count();
+    NRF_LOG_INFO("Record Done");
+
+    uint8_t packet[200];
+    for(int i=0; i < 200; i++) {
+      packet[i] = data_packet_for_send[i];
+    }
+    
     NRF_LOG_INFO("Send Something");
-        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
-        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
-        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
-        ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 0);
+    packet_size = 0;
+    index_for_send = 0;
+    packets_sent = 1;
+    ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
+  
         if(ret != NRF_SUCCESS) 
           NRF_LOG_ERROR("ERROR SENDING");
            
@@ -510,7 +532,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
 
        case BLE_GATTS_EVT_HVN_TX_COMPLETE:
             tx_success++;
-            if(tx_success > 3){
+            if(tx_success >= packet_size){
               tx_success = 0;
               send_data();
               }
@@ -730,14 +752,6 @@ void hx711_callback(hx711_evt_t evt, int value)
     }
 }
 
-static void send_Data() {
-     ble_lbs_on_button_change(m_conn_handle, &m_lbs, 44);
-     ble_lbs_on_button_change(m_conn_handle, &m_lbs, 45);
-     ble_lbs_on_button_change(m_conn_handle, &m_lbs, 46);
-     dataSend = true;
-
-}
-
 
 /**@brief Function for application main entry.
  */
@@ -756,9 +770,9 @@ int main(void)
 
     ble_stack_init();
     NRF_LOG_INFO("Init Storage");
-    //storage_init();
+    storage_init();
     //NRF_LOG_INFO("write boot count");
-    //write_boot_count();
+    write_boot_count();
     //NRF_LOG_INFO("get boot ocunt");
     //uint8_t boot_count[4000];
     //uint8_t *p = get_boot_count(boot_count);
