@@ -118,7 +118,7 @@ const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
 static uint8_t packet_size = 0;
 static uint32_t index_for_send = 0;
 static int tx_success = 0;
-static uint8_t *data_packet_for_send = 0;
+static uint8_t data_packet_for_send[4000];
 static uint8_t packets_sent = 0;
 
 
@@ -282,11 +282,13 @@ static void send_data() {
 
   
   
-  if(index_for_send < 20) {
     while(true) {
-      if(packets_sent > 3) {
+      if(packets_sent > 17) {
         break;
       }
+
+      NRF_LOG_INFO("packets sent is now %d", packets_sent);
+      NRF_LOG_INFO("First Value is %d", data_packet_for_send[packets_sent*200]);
       uint8_t packet[200];
       for(int i=0; i < 200; i++) {
         packet[i] = data_packet_for_send[packets_sent*200 + i];
@@ -306,7 +308,6 @@ static void send_data() {
            index_for_send++;
            packets_sent++;
       }
-   }
 }
 
 
@@ -318,14 +319,39 @@ static void send_data() {
 static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t led_state)
 {
     uint32_t ret;
+  
+  uint8_t test[4000];
+        for(int i = 0; i< 4000; i++) {
+          test[i] = i%255;
+        }
+  
+    uint8_t stored_data[4000];
+    uint8_t* data = get_boot_count(stored_data);
+   
 
-    data_packet_for_send = get_boot_count();
-    NRF_LOG_INFO("Record Done");
+    for(int i = 0; i< 4000; i++) {
+          data_packet_for_send[i] = data[i];
+        }
+
+    //uint8_t*data = 0; 
+    //uint8_t *t = test;//get_boot_count();
+
+    //data = malloc(4000 * sizeof(uint8_t));
+    //    memcpy(data, t, 4000 * sizeof(uint8_t));
+  
+    //data_packet_for_send = 0;
+    //data_packet_for_send = malloc(sizeof(test) * sizeof(uint8_t));
+    //    memcpy(data_packet_for_send, test, sizeof(test) * sizeof(uint8_t));
+    
+    //data_packet_for_send = p;//= get_boot_count();
+    //NRF_LOG_INFO("Record Done");
 
     uint8_t packet[200];
     for(int i=0; i < 200; i++) {
       packet[i] = data_packet_for_send[i];
     }
+    NRF_LOG_INFO("Send until packet %d", packets_sent);
+    NRF_LOG_INFO("Very First Value is %d compare is %d", data_packet_for_send[20], data[20]);
     
     NRF_LOG_INFO("Send Something");
     packet_size = 0;
@@ -638,9 +664,12 @@ static void lfclk_config(void)
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
+    nrf_gpio_pin_set(30);
+    nrf_delay_ms(200);
     hx711_start(true);
+    
     nrf_drv_rtc_counter_clear(&rtc);
-    nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    nrf_drv_rtc_cc_set(&rtc,0,12 * 8,true);
 
 }
 
@@ -661,7 +690,7 @@ static void rtc_config(void)
     ////nrf_drv_rtc_tick_enable(&rtc,true);
 
     ////Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,12 * 8,true);
     APP_ERROR_CHECK(err_code);
 
     ////Power on RTC instance
@@ -698,28 +727,7 @@ void hx711_callback(hx711_evt_t evt, int value)
 {
     uint16_t length = sizeof(int);
 
-    //if(connected) {
-    //uint32_t        err_code;
-
-    // err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 44);
-    // if (err_code != NRF_SUCCESS) 
-    //    {
-    //        NRF_LOG_ERROR("FAIL SEND");
-    //    }
-    //     nrf_delay_ms(200);
-    // err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 45);
-    //  if (err_code != NRF_SUCCESS) 
-    //    {
-    //        NRF_LOG_ERROR("FAIL SEND");
-    //    }
-    // nrf_delay_ms(200);
-    // err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 46);
-    //  if (err_code != NRF_SUCCESS) 
-    //    {
-    //        NRF_LOG_ERROR("FAIL SEND");
-    //    }
-    //   }
-    //    nrf_delay_ms(200);
+    
     
     if(evt == DATA_READY)
     {
@@ -738,9 +746,11 @@ void hx711_callback(hx711_evt_t evt, int value)
           if (value_with_offset > 0) {
             weigth = value_with_offset / 216;
           } 
+          write_boot_count(weigth / 10);
           //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
           //get_data_information(m_conn_handle, &m_lbs);
           NRF_LOG_INFO("ADC measuremement %d", weigth);
+          nrf_gpio_pin_clear(30);
         }
     }
     else
@@ -772,7 +782,7 @@ int main(void)
     NRF_LOG_INFO("Init Storage");
     storage_init();
     //NRF_LOG_INFO("write boot count");
-    write_boot_count();
+    write_boot_count(0);
     //NRF_LOG_INFO("get boot ocunt");
     //uint8_t boot_count[4000];
     //uint8_t *p = get_boot_count(boot_count);

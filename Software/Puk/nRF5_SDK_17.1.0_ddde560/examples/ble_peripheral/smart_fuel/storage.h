@@ -19,11 +19,11 @@
 /* A dummy structure to save in flash. */
 typedef struct
 {
-    uint8_t weigth[2000]; // max 4000
+    uint8_t weigth[4000]; // 6 records per minute -> data for 12 hours
     char     datetime[16];
     uint16_t index;
 } configuration_t;
 
 fds_stat_t storage_init(void);
-uint8_t* get_boot_count();
+uint8_t* get_boot_count(uint8_t * stored_data);
 #endif

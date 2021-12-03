@@ -191,8 +191,10 @@ fds_stat_t storage_init(void) {
   return stat;
 }
 
-void write_boot_count(uint32_t boot_count) {
+void write_boot_count(uint8_t boot_count) {
   ret_code_t rc;
+
+  fds_gc(); // Run garbage collection
 
   fds_record_desc_t desc = {0};
     fds_find_token_t  tok  = {0};
@@ -210,10 +212,22 @@ if (rc == NRF_SUCCESS)
         /* Copy the configuration from flash into m_dummy_cfg. */
         memcpy(&m_dummy_cfg, config.p_data, sizeof(configuration_t));
 
-        NRF_LOG_INFO("Config file found, updating boot count to %d.", m_dummy_cfg.weigth);
+        fds_stat_t stat = {0};
 
-        /* Update boot count. */
-        //m_dummy_cfg.weigth++;
+      rc = fds_stat(&stat);
+      APP_ERROR_CHECK(rc);
+
+      NRF_LOG_INFO("Found %d valid records.", stat.valid_records);
+      NRF_LOG_INFO("Found %d dirty records (ready to be garbage collected).", stat.dirty_records);
+
+        ///* Update boot count. */
+        if(m_dummy_cfg.index < 4000) {
+
+         m_dummy_cfg.index++;
+         m_dummy_cfg.weigth[m_dummy_cfg.index] = boot_count;
+        }
+
+        NRF_LOG_INFO("Config file found, updating boot count to %d. %d", m_dummy_cfg.index, m_dummy_cfg.weigth[m_dummy_cfg.index]);
 
         /* Close the record when done reading. */
         rc = fds_record_close(&desc);
@@ -252,7 +266,8 @@ if (rc == NRF_SUCCESS)
     nrf_delay_ms(10);
 }
   
-uint8_t* get_boot_count()  {
+static uint8_t * stored_weight_data;
+uint8_t* get_boot_count(uint8_t * stored_data)  {
     fds_record_desc_t desc = {0};
     fds_find_token_t  tok  = {0};
     uint32_t count;
@@ -295,7 +310,16 @@ uint8_t* get_boot_count()  {
 
         rc = fds_record_close(&desc);
         APP_ERROR_CHECK(rc);
-        return p;
+
+        //uint8_t test[4000];
+        for(int i = 0; i< 4000; i++) {
+          stored_data[i] = p_cfg->weigth[i];
+        }
+
+        //stored_weight_data = malloc(sizeof(test) * sizeof(uint8_t));
+        //memcpy(stored_weight_data, test, sizeof(test) * sizeof(uint8_t));
+
+        return stored_data;
      }
 
 

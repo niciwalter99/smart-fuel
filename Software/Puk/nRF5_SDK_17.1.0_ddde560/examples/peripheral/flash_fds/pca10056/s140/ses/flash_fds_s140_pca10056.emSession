@@ -40,8 +40,8 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="14" y="298" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="269" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="276" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../cli.c" selected="1" top="273" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="4" y="316" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="302" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="29" y="284" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../cli.c" selected="0" top="255" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="1" y="1707" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/peripheral/flash_fds/main.c" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/fds/fds.c" selected="0" top="1683" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="7" y="735" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="711" codecName="Default"/>
  </Files>
