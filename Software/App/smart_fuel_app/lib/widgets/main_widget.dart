@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:smart_fuel_app/drink_stats.dart';
+
+typedef void MyCallback();
 
 class MainWidget extends StatelessWidget {
   final String title;
   final String subTitle;
   final String iconPath;
+  final MyCallback onPressedFunction;
 
   MainWidget(
       {Key? key,
       required this.title,
       required this.subTitle,
-      required this.iconPath});
+      required this.iconPath,
+      required this.onPressedFunction});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,7 @@ class MainWidget extends StatelessWidget {
           ],
         ),
       ),
-      onPressed: () => {print("button pressed")},
+      onPressed: () => onPressedFunction(),
       style: ButtonStyle(
           //shadowColor: MaterialStateProperty.all<Color>(Colors.green),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
