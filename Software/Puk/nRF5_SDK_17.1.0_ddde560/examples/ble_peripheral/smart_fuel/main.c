@@ -333,19 +333,6 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t l
           data_packet_for_send[i] = data[i];
         }
 
-    //uint8_t*data = 0; 
-    //uint8_t *t = test;//get_boot_count();
-
-    //data = malloc(4000 * sizeof(uint8_t));
-    //    memcpy(data, t, 4000 * sizeof(uint8_t));
-  
-    //data_packet_for_send = 0;
-    //data_packet_for_send = malloc(sizeof(test) * sizeof(uint8_t));
-    //    memcpy(data_packet_for_send, test, sizeof(test) * sizeof(uint8_t));
-    
-    //data_packet_for_send = p;//= get_boot_count();
-    //NRF_LOG_INFO("Record Done");
-
     uint8_t packet[200];
     for(int i=0; i < 200; i++) {
       packet[i] = data_packet_for_send[i];

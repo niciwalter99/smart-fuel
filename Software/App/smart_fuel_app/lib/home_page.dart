@@ -5,6 +5,7 @@ import 'package:smart_fuel_app/widgets/circular_status.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_fuel_app/drink_stats.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -33,6 +34,16 @@ class _MyHomePageState extends State<MyHomePage> {
     int receivingPacket = 1;
     lists = [];
 
+    print(FlutterBlue.instance.state);
+
+    if(FlutterBlue.instance.state == BluetoothState.off) {
+      print(" no BL");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Bitte schalte dein Bluetooth an."),
+      ));
+      return;
+    }
+
 // Listen to scan results
     var subscription = flutterBlue.scanResults.listen((results) {
       // do something with scan results
@@ -45,35 +56,40 @@ class _MyHomePageState extends State<MyHomePage> {
     await Future.delayed(const Duration(seconds: 3));
     flutterBlue.stopScan();
 
-    print('connect');
-    print(waterBottle!.name);
-    await waterBottle!.connect();
+    // If device is found
+    if(waterBottle != null) {
+      print(waterBottle!.name);
+      await waterBottle!.connect();
 
-    List<BluetoothService> services = await waterBottle!.discoverServices();
-    // print('Services');
-    BluetoothCharacteristic bottleData = services[2].characteristics[0];
-    await bottleData.setNotifyValue(true);
+      List<BluetoothService> services = await waterBottle!.discoverServices();
+      // print('Services');
+      BluetoothCharacteristic bottleData = services[2].characteristics[0];
+      await bottleData.setNotifyValue(true);
 
-    if (!notification_listener_set) {
-      bottleData.value.listen((value) {
-        receivingPacket++;
-        lists.add(value);
-      });
-      notification_listener_set = true;
+      if (!notification_listener_set) {
+        bottleData.value.listen((value) {
+          receivingPacket++;
+          lists.add(value);
+        });
+        notification_listener_set = true;
+      }
+
+      await bottleData.write([2]);
+
+      // Wait until no Packet is received for 500ms
+      int i = 0;
+      while (receivingPacket > i) {
+        i = receivingPacket;
+        await Future.delayed(const Duration(milliseconds: 500));
+        i++;
+      }
+      print(lists);
+      waterBottle!.disconnect();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Gerät konnte nicht gefunden werden"),
+      ));
     }
-
-    await bottleData.write([2]);
-
-    // Wait until no Packet is received for 500ms
-    int i = 0;
-    while (receivingPacket > i) {
-      i = receivingPacket;
-      await Future.delayed(const Duration(milliseconds: 500));
-      i++;
-    }
-    print('disconnect');
-    print(lists);
-    waterBottle!.disconnect();
   }
 
   @override

@@ -197,7 +197,7 @@ void write_boot_count(uint8_t boot_count) {
   fds_gc(); // Run garbage collection
 
   fds_record_desc_t desc = {0};
-    fds_find_token_t  tok  = {0};
+  fds_find_token_t  tok  = {0};
   rc = fds_record_find(CONFIG_FILE, CONFIG_REC_KEY, &desc, &tok);
 
 if (rc == NRF_SUCCESS)
