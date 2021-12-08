@@ -4,8 +4,10 @@ import 'package:smart_fuel_app/widgets/main_widget.dart';
 import 'package:smart_fuel_app/widgets/circular_status.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:smart_fuel_app/drink_stats.dart';
+import 'package:smart_fuel_app/drink_stats/drink_stats.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:smart_fuel_app/drink_stats/data.dart';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -18,12 +20,30 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   double drunken_water = 1340;
-  var lists = [];
+  List<List<int>> lists = [];
+  List<List<int>> filteredData = [];
   bool notification_listener_set = false;
+  int receivingPacket = 1;
+
+  _readData(characteristic) async {
+    characteristic.value.listen((value) {
+      //List<int> readData = new List.from(value);
+      print(value);
+      lists.add(value);
+      print(value.length);
+      receivingPacket++;
+
+      // if (readData.isNotEmpty && readData != []) {
+      //   receivingPacket++;
+      //   lists.add(value);
+      //   print(value);
+      // }
+    });
+  }
 
   void PushDrinkStatsWidget() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => DrinkStats(data: lists)),
+      MaterialPageRoute(builder: (context) => DrinkStats(data: filteredData)),
     );
   }
 
@@ -31,18 +51,18 @@ class _MyHomePageState extends State<MyHomePage> {
     FlutterBlue flutterBlue = FlutterBlue.instance;
     flutterBlue.startScan(timeout: Duration(seconds: 4));
     BluetoothDevice? waterBottle;
-    int receivingPacket = 1;
+    receivingPacket = 1;
     lists = [];
 
     print(FlutterBlue.instance.state);
 
-    if(FlutterBlue.instance.state == BluetoothState.off) {
-      print(" no BL");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Bitte schalte dein Bluetooth an."),
-      ));
-      return;
-    }
+    // if(FlutterBlue.instance.state == BluetoothState.off) {
+    //   print(" no BL");
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //     content: Text("Bitte schalte dein Bluetooth an."),
+    //   ));
+    //   return;
+    // }
 
 // Listen to scan results
     var subscription = flutterBlue.scanResults.listen((results) {
@@ -67,14 +87,12 @@ class _MyHomePageState extends State<MyHomePage> {
       await bottleData.setNotifyValue(true);
 
       if (!notification_listener_set) {
-        bottleData.value.listen((value) {
-          receivingPacket++;
-          lists.add(value);
-        });
+        _readData(bottleData);
+
         notification_listener_set = true;
       }
 
-      await bottleData.write([2]);
+      bottleData.write([2]);
 
       // Wait until no Packet is received for 500ms
       int i = 0;
@@ -83,10 +101,19 @@ class _MyHomePageState extends State<MyHomePage> {
         await Future.delayed(const Duration(milliseconds: 500));
         i++;
       }
-      print(lists);
+      print(lists.length);
       waterBottle!.disconnect();
+
+      print("Start async calculation");
+      var unpackedData = lists.expand((i) => i).toList();
+      Data data = Data(unpackedData);
+      Future.delayed(Duration.zero,() async {
+        filteredData = await data.filterData();
+      });
+      print("end");
+
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Gerät konnte nicht gefunden werden"),
       ));
     }
@@ -178,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     Text(drunken_water.round().toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     const Text("ml",
                         style: TextStyle(

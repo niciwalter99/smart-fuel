@@ -54,6 +54,8 @@
 #include "nrf_log.h"
 NRF_LOG_MODULE_REGISTER();
 
+bool wait_for_delete = false;
+
 
 /**@brief Function for handling the Write event.
  *
@@ -71,9 +73,23 @@ static void on_write(ble_lbs_t * p_lbs, ble_evt_t const * p_ble_evt)
         if(p_evt_write->data[0] == 2) {  //Write 1
         NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
         NRF_LOG_INFO("Write the DaTATAAAAAAAAAAAAA");
-           p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, p_evt_write->data[0]);
+           p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, 0);
         
         }
+        
+        if(p_evt_write->data[0] == 3) {
+          wait_for_delete = true; 
+          records_written = 1;
+          NRF_LOG_INFO("Delete all");
+          delete_all_begin();
+        }
+
+        // Set to Tara
+        if(p_evt_write->data[0] == 4) {
+          p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, 2);
+        }
+
+
     if (   (p_evt_write->handle == p_lbs->led_char_handles.value_handle)
         && (p_evt_write->len == 1)
         && (p_lbs->led_write_handler != NULL))

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_blue_localnotify/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'DataScreen.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -42,6 +42,7 @@ class BluetoothOffScreen extends StatelessWidget {
   const BluetoothOffScreen({Key key, this.state}) : super(key: key);
 
   final BluetoothState state;
+
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +160,7 @@ class DeviceScreen extends StatefulWidget {
   final BluetoothDevice device;
 
   @override
-  _DeviceScreenState createState() => _DeviceScreenState();
+  _DeviceScreenState createState() => _DeviceScreenState(device);
 }
 
 
@@ -167,6 +168,17 @@ class DeviceScreen extends StatefulWidget {
 class _DeviceScreenState extends State<DeviceScreen> {
   bool isConnected = false;
   var lists = [];
+  bool listener_init = false;
+
+  void setup(BluetoothDevice device) async{
+    final mtu = await device.mtu.first;
+    await device.requestMtu(251);
+    print("Set MTU");
+  }
+  _DeviceScreenState(BluetoothDevice device){
+    setup(device);
+  }
+
   String getValue(value) {
 
     if (value.length != 0) {
@@ -204,6 +216,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
     BluetoothCharacteristic characteristic;
 
+
+
     for(final c in s.characteristics) {
       print('Characteristics');
       print(s.characteristics);
@@ -215,7 +229,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
     }
     print("INit");
 
-    _readData(characteristic);
+    if(!listener_init) {
+      _readData(characteristic);
+      listener_init = true;
+    }
 
     return Column(
         children: <Widget>[
@@ -257,11 +274,22 @@ class _DeviceScreenState extends State<DeviceScreen> {
       builder: (context) =>
           PlotData(data: lists))),
       ),
-
-
+          TextButton(
+            child: Text("Copy to Clipboard"),
+            onPressed: () => Clipboard.setData(ClipboardData(text: lists.toString().replaceAll("], [", ",")),
+          ),
+          ),
+          TextButton(
+            child: Text("Delete Data Remotely"),
+            onPressed: () => characteristic.write([3]),
+            ),
+          TextButton(
+            child: Text("Set Tara"),
+            onPressed: () => characteristic.write([4]),
+          ),
     ],
     );/*
-
+Clipboard.setData(ClipboardData(text: "your text"));
     return StreamBuilder<List<int>>(
       stream: characteristic.value,
       initialData: characteristic.lastValue,

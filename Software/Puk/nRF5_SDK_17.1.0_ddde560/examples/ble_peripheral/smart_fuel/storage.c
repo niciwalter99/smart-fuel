@@ -22,12 +22,15 @@ static void power_manage(void)
 #endif
 }
 
+uint8_t records_written = 1;
+
 /* Dummy configuration data. */
-static configuration_t m_dummy_cfg =
+static water_level_head_file init_cfg =
 {
     .index  = 0,
-    .weigth  = {20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1},
+    .weigth  = {0},
     .datetime = "dummy",
+    .global_index = 0,
 };
 
 /* Array to map FDS events to strings. */
@@ -42,13 +45,13 @@ static char const * fds_evt_str[] =
 };
 
 /* A record containing dummy configuration data. */
-static fds_record_t const m_dummy_record =
+static fds_record_t const water_level_record =
 {
-    .file_id           = CONFIG_FILE,
-    .key               = CONFIG_REC_KEY,
-    .data.p_data       = &m_dummy_cfg,
+    .file_id           = WATER_LEVEL_HEAD_FILE,
+    .key               = WATER_LEVEL_REC_KEY,
+    .data.p_data       = &init_cfg,
     /* The length of a record is always expressed in 4-byte units (words). */
-    .data.length_words = (sizeof(m_dummy_cfg) + 3) / sizeof(uint32_t),
+    .data.length_words = (sizeof(init_cfg) + 3) / sizeof(uint32_t),
 };
 
 /* Keep track of the progress of a delete_all operation. */
@@ -154,6 +157,27 @@ void delete_all_begin(void)
     m_delete_all.delete_next = true;
 }
 
+bool record_delete_next(void)
+{
+    fds_find_token_t  tok   = {0};
+    fds_record_desc_t desc  = {0};
+
+    if (fds_record_iterate(&desc, &tok) == NRF_SUCCESS)
+    {
+        ret_code_t rc = fds_record_delete(&desc);
+        if (rc != NRF_SUCCESS)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    else
+    {
+        /* No records left to delete. */
+        return false;
+    }
+}
 
 /**@brief   Process a delete all command.
  *
@@ -169,6 +193,7 @@ void delete_all_process(void)
         m_delete_all.delete_next = record_delete_next();
         if (!m_delete_all.delete_next)
         {
+            wait_for_delete = false;
             NRF_LOG_INFO("No records left to delete.");
         }
     }
@@ -198,7 +223,9 @@ void write_boot_count(uint8_t boot_count) {
 
   fds_record_desc_t desc = {0};
   fds_find_token_t  tok  = {0};
-  rc = fds_record_find(CONFIG_FILE, CONFIG_REC_KEY, &desc, &tok);
+  for(int i = 0; i < records_written; i++) {
+    rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
+  }
 
 if (rc == NRF_SUCCESS)
     {
@@ -210,7 +237,7 @@ if (rc == NRF_SUCCESS)
         APP_ERROR_CHECK(rc);
 
         /* Copy the configuration from flash into m_dummy_cfg. */
-        memcpy(&m_dummy_cfg, config.p_data, sizeof(configuration_t));
+        memcpy(&init_cfg, config.p_data, sizeof(water_level_head_file));
 
         fds_stat_t stat = {0};
 
@@ -220,21 +247,67 @@ if (rc == NRF_SUCCESS)
       NRF_LOG_INFO("Found %d valid records.", stat.valid_records);
       NRF_LOG_INFO("Found %d dirty records (ready to be garbage collected).", stat.dirty_records);
 
-        ///* Update boot count. */
-        if(m_dummy_cfg.index < 4000) {
+      if (init_cfg.index + 1 > DATA_PER_RECORD) {
+       NRF_LOG_INFO("Index out of Border");
+        records_written++;
+        uint8_t global_index = init_cfg.global_index + 1;
+        /* Close the record when done reading. */
+         rc = fds_record_close(&desc);
+         APP_ERROR_CHECK(rc);
 
-         m_dummy_cfg.index++;
-         m_dummy_cfg.weigth[m_dummy_cfg.index] = boot_count;
+         // Look if next Record exists (e.g. after Reboot)
+
+         rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
+         fds_flash_record_t config = {0};
+
+        if(rc == NRF_SUCCESS) {
+          NRF_LOG_INFO("Found next Record, use this instead");
+          /* Open the record and read its contents. */
+          rc = fds_record_open(&desc, &config); 
+          memcpy(&init_cfg, config.p_data, sizeof(water_level_head_file));
+          rc = fds_record_close(&desc);
+         APP_ERROR_CHECK(rc);
+
+        } else {
+
+           /* Record is full, write new one */
+          NRF_LOG_INFO("Writing new Record beause old is too big");
+
+          /*Creating new start file */
+          init_cfg.index = 0;
+          //Set everything to 0 again for new Record
+          for(int i = 0; i < DATA_PER_RECORD; i++) {
+            init_cfg.weigth[i] = 0;
+          }
+          init_cfg.weigth[init_cfg.index] = boot_count;
+          init_cfg.global_index = global_index;
+
+          rc = fds_record_write(&desc, &water_level_record);
+          if ((rc != NRF_SUCCESS) && (rc == FDS_ERR_NO_SPACE_IN_FLASH))
+          {
+              NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
+          }
+          else if(rc == FDS_ERR_RECORD_TOO_LARGE) {
+            NRF_LOG_ERROR("Record is too big");
+          }
+          else
+          {
+              APP_ERROR_CHECK(rc);
+          }
         }
-
-        NRF_LOG_INFO("Config file found, updating boot count to %d. %d", m_dummy_cfg.index, m_dummy_cfg.weigth[m_dummy_cfg.index]);
-
+      }
+      else {
+        
+        
+        init_cfg.weigth[init_cfg.index] = boot_count;
+        NRF_LOG_INFO("Config file found, updating boot count to %d. %d", init_cfg.index, init_cfg.weigth[init_cfg.index]);
+        init_cfg.index++;
         /* Close the record when done reading. */
         rc = fds_record_close(&desc);
         APP_ERROR_CHECK(rc);
 
         /* Write the updated record to flash. */
-        rc = fds_record_update(&desc, &m_dummy_record);
+        rc = fds_record_update(&desc, &water_level_record);
         if ((rc != NRF_SUCCESS) && (rc == FDS_ERR_NO_SPACE_IN_FLASH))
         {
             NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
@@ -243,6 +316,10 @@ if (rc == NRF_SUCCESS)
         {
             APP_ERROR_CHECK(rc);
         }
+      }
+        
+
+         
 
     }
     else
@@ -250,7 +327,15 @@ if (rc == NRF_SUCCESS)
         /* System config not found; write a new one. */
         NRF_LOG_INFO("Writing config file...");
 
-        rc = fds_record_write(&desc, &m_dummy_record);
+        init_cfg.index = 0;
+        init_cfg.global_index;
+        //Set everything to 0 again for new Record
+        for(int i = 0; i < DATA_PER_RECORD; i++) {
+          init_cfg.weigth[i] = 0;
+        }
+
+
+        rc = fds_record_write(&desc, &water_level_record);
         if ((rc != NRF_SUCCESS) && (rc == FDS_ERR_NO_SPACE_IN_FLASH))
         {
             NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
@@ -266,61 +351,71 @@ if (rc == NRF_SUCCESS)
     nrf_delay_ms(10);
 }
   
-static uint8_t * stored_weight_data;
-uint8_t* get_boot_count(uint8_t * stored_data)  {
+uint8_t* get_stored_data(uint8_t * stored_data,uint8_t record_count)  {
     fds_record_desc_t desc = {0};
     fds_find_token_t  tok  = {0};
-    uint32_t count;
+    ret_code_t rc;
 
-    NRF_LOG_INFO("Get Record");
-    while (fds_record_find(CONFIG_FILE, CONFIG_REC_KEY, &desc, &tok) == NRF_SUCCESS)
-    {
-        ret_code_t rc;
+
+    NRF_LOG_INFO("Get Record number %d", record_count);
+
+
+     for(int i = 0; i <(record_count+1); i++) {
+      rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
+    }
+    if( rc != NRF_SUCCESS) {
+      NRF_LOG_INFO("NO RECORD FOUND!");
+      return stored_data;
+    }
         fds_flash_record_t frec = {0};
 
         rc = fds_record_open(&desc, &frec);
-        switch (rc)
-        {
-            case NRF_SUCCESS:
-                break;
 
-            case FDS_ERR_CRC_CHECK_FAILED:
-                NRF_LOG_ERROR("error: CRC check failed!\n");
-                continue;
+        //switch (rc)
+        //{
+        //    case NRF_SUCCESS:
+              
+        //        break;
+            
+        //    case FDS_ERR_CRC_CHECK_FAILED:
+        //        NRF_LOG_ERROR("error: CRC check failed!\n");
+        //        break;
 
-            case FDS_ERR_NOT_FOUND:
-                NRF_LOG_ERROR("error: record not found!\n");
-                continue;
+        //    case FDS_ERR_NOT_FOUND:
+        //        NRF_LOG_ERROR("error: record not found!\n");
+        //        break;
 
-            default:
-            {
-                NRF_LOG_ERROR(
-                                "error: unexpecte error %s.\n",
-                                fds_err_str(rc));
+        //    default:
+        //    {
+        //        NRF_LOG_ERROR(
+        //                        "error: unexpecte error %s.\n",
+        //                        fds_err_str(rc));
+        //        break;
 
-                continue;
-            }
+        //    }
+        //}
+
+        if(rc == NRF_SUCCESS) {
+        water_level_head_file * p_cfg = (water_level_head_file *)(frec.p_data);
+        NRF_LOG_INFO("Return %d", p_cfg->global_index);
+
+        for(int i = 0 ; i< 4000; i++) {
+            stored_data[i] = p_cfg->weigth[i];
         }
-
-        configuration_t * p_cfg = (configuration_t *)(frec.p_data);
-        NRF_LOG_INFO("Return %d", p_cfg->weigth[0]);
-
-        int * p = malloc(sizeof(p_cfg->weigth) * sizeof(uint8_t));
-        memcpy(p, p_cfg->weigth, sizeof(p_cfg->weigth) * sizeof(uint8_t));
 
         rc = fds_record_close(&desc);
         APP_ERROR_CHECK(rc);
-
-        //uint8_t test[4000];
-        for(int i = 0; i< 4000; i++) {
-          stored_data[i] = p_cfg->weigth[i];
         }
 
-        //stored_weight_data = malloc(sizeof(test) * sizeof(uint8_t));
-        //memcpy(stored_weight_data, test, sizeof(test) * sizeof(uint8_t));
+        //water_level_head_file * p_cfg = (water_level_head_file *)(frec.p_data);
+        //NRF_LOG_INFO("Return %d", p_cfg->global_index);
 
-        return stored_data;
-     }
+        //rc = fds_record_close(&desc);
+        //APP_ERROR_CHECK(rc);
+        
+        //NRF_LOG_INFO("Get Record with global index of %d",p_cfg->global_index);
+
+     return stored_data;
 
 
 }

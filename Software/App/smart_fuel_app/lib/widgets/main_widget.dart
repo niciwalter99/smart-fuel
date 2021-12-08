@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_fuel_app/drink_stats.dart';
+import 'package:smart_fuel_app/drink_stats/drink_stats.dart';
 
 typedef void MyCallback();
 

@@ -91,10 +91,12 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/main.o: \
  ../../../../../../components/libraries/sortlist/nrf_sortlist.h \
  ../../../../../../components/libraries/button/app_button.h \
  ../../../../../../components/ble/ble_services/ble_lbs/ble_lbs.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/storage.h \
+ ../../../../../../components/libraries/fds/fds.h \
+ ../../../../../../components/libraries/delay/nrf_delay.h \
  ../../../../../../components/ble/nrf_ble_gatt/nrf_ble_gatt.h \
  ../../../../../../components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  ../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.h \
- ../../../../../../components/libraries/delay/nrf_delay.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.h \
  ../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h \
@@ -104,7 +106,6 @@ Output/Release/Obj/ble_app_blinky_pca10056_s140/main.o: \
  ../../../../../../modules/nrfx/hal/nrf_clock.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_power_clock.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/storage.h \
- ../../../../../../components/libraries/fds/fds.h \
  ../../../../../../components/libraries/log/nrf_log.h \
  ../../../../../../components/libraries/strerror/nrf_strerror.h \
  ../../../../../../components/libraries/log/src/nrf_log_internal.h \

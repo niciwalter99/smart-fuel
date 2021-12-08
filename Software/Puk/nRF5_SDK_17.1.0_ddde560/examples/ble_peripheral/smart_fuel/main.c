@@ -90,8 +90,8 @@
 #define APP_ADV_DURATION                BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED   /**< The advertising time-out (in units of seconds). When set to 0, we will never time out. */
 
 
-#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(10, UNIT_1_25_MS)        /**< Minimum acceptable connection interval now4s (0.5 seconds). */
-#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(30, UNIT_1_25_MS)        /**< Maximum acceptable connection interval (1 second). */
+#define MIN_CONN_INTERVAL               MSEC_TO_UNITS(15, UNIT_1_25_MS)        /**< Minimum acceptable connection interval now4s (0.5 seconds). */
+#define MAX_CONN_INTERVAL               MSEC_TO_UNITS(40, UNIT_1_25_MS)        /**< Maximum acceptable connection interval (1 second). */
 #define SLAVE_LATENCY                   0                                       /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)         /**< Connection supervisory time-out (4 seconds). */
 
@@ -118,8 +118,12 @@ const nrf_drv_rtc_t rtc = NRF_DRV_RTC_INSTANCE(2);
 static uint8_t packet_size = 0;
 static uint32_t index_for_send = 0;
 static int tx_success = 0;
-static uint8_t data_packet_for_send[4000];
+static uint8_t* data_packet_for_send[4000];
 static uint8_t packets_sent = 0;
+static uint8_t records_sent = 0;
+
+static bool hx711_offset_set = false;
+static uint32_t hx711_offset = 0;
 
 
 /**@brief Struct that contains pointers to the encoded advertising data. */
@@ -275,6 +279,7 @@ static void nrf_qwr_error_handler(uint32_t nrf_error)
 {
     APP_ERROR_HANDLER(nrf_error);
 }
+//static bool send = true;
 
 static void send_data() {
   uint8_t t[200] = {12,42};
@@ -283,12 +288,29 @@ static void send_data() {
   
   
     while(true) {
-      if(packets_sent > 17) {
-        break;
+      if(packets_sent >19 && ((records_sent + 1)< records_written)) {
+
+      NRF_LOG_INFO("New packet sent");
+      NRF_LOG_INFO("Records written is %d", records_written);
+        uint8_t stored_data[4000];
+
+        uint8_t* data = get_stored_data(stored_data, ++records_sent);   
+
+        for(int i = 0; i< 4000; i++) {
+              *(data_packet_for_send + i) = *(data + i);
+            }
+        packets_sent = 0;
       }
 
-      NRF_LOG_INFO("packets sent is now %d", packets_sent);
-      NRF_LOG_INFO("First Value is %d", data_packet_for_send[packets_sent*200]);
+     else if(packets_sent > 19) {
+        break; 
+     }
+      NRF_LOG_INFO("Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
+      
+      
+
+      //NRF_LOG_INFO("packets sent is now %d", packets_sent);
+      //NRF_LOG_INFO("First Value is %d", data_packet_for_send[packets_sent*200]);
       uint8_t packet[200];
       for(int i=0; i < 200; i++) {
         packet[i] = data_packet_for_send[packets_sent*200 + i];
@@ -296,6 +318,7 @@ static void send_data() {
       uint32_t ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
           if(ret == NRF_ERROR_RESOURCES){
           // Queue is full
+          NRF_LOG_INFO("Queue is full Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
             break;
            }
            else if(ret != NRF_SUCCESS){
@@ -318,19 +341,29 @@ static void send_data() {
  */
 static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t led_state)
 {
+  if(led_state == 2) {
+
+      NRF_LOG_INFO("Set Tara to actual value");
+      hx711_offset_set = false;
+      return;
+  }
     uint32_t ret;
   
   uint8_t test[4000];
         for(int i = 0; i< 4000; i++) {
           test[i] = i%255;
         }
-  
-    uint8_t stored_data[4000];
-    uint8_t* data = get_boot_count(stored_data);
-   
 
-    for(int i = 0; i< 4000; i++) {
-          data_packet_for_send[i] = data[i];
+    NRF_LOG_INFO("get record num");
+   uint16_t data_num = 4000; //= records_written*DATA_PER_RECORD;
+
+   uint8_t stored_data[4000];
+   records_sent = 0;
+
+    uint8_t* data = get_stored_data(stored_data, records_sent);   
+
+    for(int i = 0; i< data_num; i++) {
+          *(data_packet_for_send + i) = *(data + i);
         }
 
     uint8_t packet[200];
@@ -338,12 +371,13 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t l
       packet[i] = data_packet_for_send[i];
     }
     NRF_LOG_INFO("Send until packet %d", packets_sent);
-    NRF_LOG_INFO("Very First Value is %d compare is %d", data_packet_for_send[20], data[20]);
+   // NRF_LOG_INFO("Very First Value is %d compare is %d", data_packet_for_send[20], data[20]);
     
     NRF_LOG_INFO("Send Something");
     packet_size = 0;
     index_for_send = 0;
     packets_sent = 1;
+    tx_success = 0;
     ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
   
         if(ret != NRF_SUCCESS) 
@@ -455,6 +489,25 @@ static void advertising_start(void)
 static bool connected = false;
 static bool dataSend = false;
 
+__STATIC_INLINE void fnOnNotificationComplete( ble_evt_t const * p_ble_evt)
+{
+    ble_gatts_evt_hvn_tx_complete_t const * p_evt_complete = &p_ble_evt->evt.gatts_evt.params.hvn_tx_complete;
+    tx_success += p_evt_complete->count; // increase available buffers for notifications by the number of completed
+
+     tx_success += p_evt_complete->count;
+
+
+     NRF_LOG_INFO("Count is %d", p_evt_complete->count);   
+    NRF_LOG_INFO("Success %d, packets size %d", tx_success, packet_size);
+    if(tx_success >= packet_size){
+    
+      tx_success = 0;
+      send_data();
+      }
+}
+
+ble_gatts_evt_hvn_tx_complete_t* p_evt_complete;
+
 /**@brief Function for handling BLE events.
  *
  * @param[in]   p_ble_evt   Bluetooth stack event.
@@ -544,11 +597,7 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context)
             break;
 
        case BLE_GATTS_EVT_HVN_TX_COMPLETE:
-            tx_success++;
-            if(tx_success >= packet_size){
-              tx_success = 0;
-              send_data();
-              }
+          fnOnNotificationComplete(p_ble_evt);
             break;
 
 
@@ -656,7 +705,7 @@ static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
     hx711_start(true);
     
     nrf_drv_rtc_counter_clear(&rtc);
-    nrf_drv_rtc_cc_set(&rtc,0,12 * 8,true);
+    nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
 
 }
 
@@ -677,7 +726,7 @@ static void rtc_config(void)
     ////nrf_drv_rtc_tick_enable(&rtc,true);
 
     ////Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,12 * 8,true);
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
     APP_ERROR_CHECK(err_code);
 
     ////Power on RTC instance
@@ -705,10 +754,10 @@ static void idle_state_handle(void)
     {
         nrf_pwr_mgmt_run();
     }
+    delete_all_process();
+    
 }
 
-static bool hx711_offset_set = false;
-static uint32_t hx711_offset = 0;
 
 void hx711_callback(hx711_evt_t evt, int value)
 {
@@ -733,10 +782,14 @@ void hx711_callback(hx711_evt_t evt, int value)
           if (value_with_offset > 0) {
             weigth = value_with_offset / 216;
           } 
-          write_boot_count(weigth / 10);
+          if(!wait_for_delete) {
+            write_boot_count(weigth / 10);
+          } else {
+            NRF_LOG_INFO("Wait for Delete end");
+          }
           //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
           //get_data_information(m_conn_handle, &m_lbs);
-          NRF_LOG_INFO("ADC measuremement %d", weigth);
+          //NRF_LOG_INFO("ADC measuremement %d", weigth);
           nrf_gpio_pin_clear(30);
         }
     }
@@ -746,6 +799,7 @@ void hx711_callback(hx711_evt_t evt, int value)
          by a higher priority interrupt during readout (i.e., Softdevice radio event).
          */
         NRF_LOG_INFO("ADC readout error. %d 0x%x", value, value);
+        write_boot_count(0); // 0 value is noise
     }
 }
 
