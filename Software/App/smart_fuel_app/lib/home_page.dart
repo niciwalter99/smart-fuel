@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:smart_fuel_app/widgets/main_widget.dart';
@@ -7,6 +8,12 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_fuel_app/drink_stats/drink_stats.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smart_fuel_app/drink_stats/data.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:async';
+import 'package:simple_cluster/src/dbscan.dart';
+import 'dart:convert';
+
+
 
 
 class MyHomePage extends StatefulWidget {
@@ -18,10 +25,25 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+Future<String> calculate(List<List<double>> inputData) async {
+  print('function');
+
+  DBSCAN dbscan = DBSCAN(
+    epsilon: 2,
+    minPoints: 3,
+  );
+  dbscan.run(inputData);
+  print('end');
+
+  return dbscan.label.toString();
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   double drunken_water = 1340;
+  List<List<double>> inputData = [];
   List<List<int>> lists = [];
   List<List<int>> filteredData = [];
+  var cluster = [];
   bool notification_listener_set = false;
   int receivingPacket = 1;
 
@@ -43,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void PushDrinkStatsWidget() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => DrinkStats(data: filteredData)),
+      MaterialPageRoute(builder: (context) => DrinkStats(cluster: cluster, inputData: inputData)),
     );
   }
 
@@ -105,12 +127,20 @@ class _MyHomePageState extends State<MyHomePage> {
       waterBottle!.disconnect();
 
       print("Start async calculation");
+
+
+      //data = Data(inputData);
+
+      print('start calc');
       var unpackedData = lists.expand((i) => i).toList();
-      Data data = Data(unpackedData);
+
+      for (int i = 0; i < unpackedData.length; i++) {
+        inputData.add([i.toDouble(), unpackedData[i].toDouble()]);
+      }
       Future.delayed(Duration.zero,() async {
-        filteredData = await data.filterData();
+        String i = await compute(calculate, inputData);
+        cluster = json.decode(i);
       });
-      print("end");
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -201,7 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(12.0),
                       child: SizedBox(
                         height: 50,
-                        child: Image.asset("assets/glass_icon.png"),
+                        child: SvgPicture.asset(
+                            "assets/glass_icon.svg"
+                        ),
                       ),
                     ),
                     Text(drunken_water.round().toString(),
@@ -222,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: MainWidget(
                     title: "Trinkgewohnheiten",
                     subTitle: "Betrachte deine Trends",
-                    iconPath: "assets/stats_icon.png",
+                    iconPath: "assets/stats_icon.svg",
                     onPressedFunction: PushDrinkStatsWidget,
                   ),
                 ),
@@ -234,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: MainWidget(
                     title: "Wiegen",
                     subTitle: "Deine Flasche als Waage",
-                    iconPath: "assets/waage_icon.png",
+                    iconPath: "assets/waage_icon.svg",
                     onPressedFunction: PushDrinkStatsWidget,
                   ),
                 ),
@@ -246,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: MainWidget(
                     title: "Flasche",
                     subTitle: "Personalisiere deine Flasche",
-                    iconPath: "assets/bottle_icon.png",
+                    iconPath: "assets/bottle_icon.svg",
                     onPressedFunction: PushDrinkStatsWidget,
                   ),
                 ),
@@ -258,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: MainWidget(
                     title: "Einstellungen",
                     subTitle: "Konto, Benachrichtigungen ...",
-                    iconPath: "assets/setting_icon.png",
+                    iconPath: "assets/setting_icon.svg",
                     onPressedFunction: PushDrinkStatsWidget,
                   ),
                 ),

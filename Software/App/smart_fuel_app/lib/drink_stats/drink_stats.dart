@@ -4,12 +4,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:smart_fuel_app/drink_stats/data.dart';
 
 class DrinkStats extends StatefulWidget {
-  const DrinkStats({Key? key, required this.data}) : super(key: key);
+  const DrinkStats({Key? key, required this.cluster, required this.inputData}) : super(key: key);
 
-  final List<List<int>> data;
+  final List<dynamic> cluster;
+  final List<List<double>> inputData;
 
   @override
-  _DrinkStatsState createState() => _DrinkStatsState(data);
+  _DrinkStatsState createState() => _DrinkStatsState(cluster, inputData);
 }
 
 class WaterLevel {
@@ -21,33 +22,34 @@ class WaterLevel {
 }
 
 class _DrinkStatsState extends State<DrinkStats> {
-  List<List<int>> inputData = [];
+  var cluster ;
+  List<List<double>> inputData;
 
-  _DrinkStatsState(this.filteredData);
+  _DrinkStatsState(this.cluster, this.inputData);
 
   List<int> unpackedData = [];
   List<List<int>> filteredData = [];
   List<List<int>> plotData = [];
   DayStats? dayStats;
 
-  Future<void> processData() async {
-    unpackedData = inputData.expand((i) => i).toList();
-    Data data = Data(unpackedData);
-    //filteredData = await data.filterData();
-    dayStats = await data.analyzeData(filteredData);
-    plotData = data.getDataForPlot(filteredData);
-
-    setState(() {});
-  }
-
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      processData();
-    });
-    dayStats =
-        DayStats(sumOfWater: 0, bottleFillUp: 0, nipCounter: 0, avgGulpSize: 0);
+    print(inputData);
+    print(cluster);
+    if(cluster.length != inputData.length) {
+      dayStats = DayStats(sumOfWater: 0,
+          bottleFillUp:0,
+          nipCounter:0,
+          avgGulpSize:0);
+
+    } else {
+      Data data = Data(inputData, cluster);
+      data.filterData();
+      dayStats = data.analyzeData();
+      plotData = data.getDataForPlot();
+    }
+
   }
 
   List<charts.Series<List<int>, int>> _createSampleData() {

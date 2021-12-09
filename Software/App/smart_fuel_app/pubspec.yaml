@@ -46,6 +46,7 @@ dev_dependencies:
   charts_flutter: ^0.12.0
   fluttertoast: ^8.0.8
   simple_cluster: ^0.3.0
+  flutter_svg: ^1.0.0
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -72,11 +73,12 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/stats_icon.svg
     - assets/stats_icon.png
-    - assets/waage_icon.png
-    - assets/bottle_icon.png
-    - assets/setting_icon.png
-    - assets/glass_icon.png
+    - assets/waage_icon.svg
+    - assets/bottle_icon.svg
+    - assets/setting_icon.svg
+    - assets/glass_icon.svg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

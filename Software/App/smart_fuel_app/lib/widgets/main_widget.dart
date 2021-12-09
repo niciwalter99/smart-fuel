@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_fuel_app/drink_stats/drink_stats.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 typedef void MyCallback();
 
@@ -29,7 +29,9 @@ class MainWidget extends StatelessWidget {
                 radius: 30,
                 child: Padding(
                   padding: const EdgeInsets.all(13.0),
-                  child: Image.asset(iconPath),
+                  child: SvgPicture.asset(
+                      iconPath
+                  ),//Image.asset(iconPath),
                 ),
                 backgroundColor: const Color(0xFFF4F6F6),
               ),

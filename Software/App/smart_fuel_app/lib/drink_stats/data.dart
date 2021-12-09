@@ -21,27 +21,21 @@ class DayStats {
 
 class Data {
   List<List<double>> inputData = [];
+  List<dynamic> clusters = [];
   List<WaterLevel> waterLevelPoints = [];
+  List<List<int>> clusteredAverages = [];
 
-  Data(List<int> rawInputData) {
-    for (int i = 0; i < rawInputData.length; i++) {
-      inputData.add([i.toDouble(), rawInputData[i].toDouble()]);
-    }
-  }
+  Data(this.inputData, this.clusters);
 
-  Future<List<List<int>>> filterData() async{
+  void filterData(){
 
-    DBSCAN dbscan = DBSCAN(
-      epsilon: 2,
-      minPoints: 3,
-    );
-    dbscan.run(inputData);
+    print("Filter Data");
 
     for (int i = 0; i < inputData.length; i++) {
-      if (dbscan.label![i] != -1) {
+      if (clusters[i] != -1) {
         waterLevelPoints.add(WaterLevel(
             inputData[i][0].toInt(), inputData[i][1].toInt(),
-            dbscan.label![i]));
+            clusters[i]));
       }
     }
 
@@ -49,8 +43,6 @@ class Data {
     int countOfClusterValues = 0;
     int cluster = 0;
     int timestampOfFirstClusterPoint = 0;
-
-    List<List<int>> averagedClusterValues = [];
 
     for (WaterLevel point in waterLevelPoints) {
       if (point.cluster == cluster) {
@@ -64,10 +56,14 @@ class Data {
 
       if (point.cluster == cluster + 1 ||
           point.timestamp == waterLevelPoints.last.timestamp) {
-        averagedClusterValues.add([
-          sumOfClusterValues ~/ countOfClusterValues,
-          timestampOfFirstClusterPoint
-        ]);
+
+        // Prevent divide by 0 Exception
+        if(countOfClusterValues > 0 ) {
+          clusteredAverages.add([
+            sumOfClusterValues ~/ countOfClusterValues,
+            timestampOfFirstClusterPoint
+          ]);
+        }
         sumOfClusterValues = 0;
         countOfClusterValues = 0;
         cluster += 1;
@@ -75,14 +71,21 @@ class Data {
     }
 
     // Additional Filter for Values smaller than Tara Value (Value of the Bottle, here 160gram).
-    averagedClusterValues.removeWhere((element) => element[0] <= 10);
+    clusteredAverages.removeWhere((element) => element[0] <= 10);
 
     print("Result of Data Preparation");
-    print(averagedClusterValues);
-    return averagedClusterValues;
+    print(clusteredAverages);
+
   }
 
-  Future<DayStats> analyzeData(List<List<int>> averagedClusterValues) async{
+  DayStats analyzeData(){
+    if(clusteredAverages.isEmpty) {
+      return DayStats(sumOfWater: 0,
+          bottleFillUp:0,
+          nipCounter:0,
+          avgGulpSize:0);
+    }
+    List<List<int>> averagedClusterValues = clusteredAverages;
     int waterDrunk = 0;
     List<List<int>> refillPoints = [];
     int gulpCounter = 0;
@@ -116,7 +119,11 @@ class Data {
     // print("Your average Gulp Size is ${waterDrunk * 10 / gulpCounter} ml");
   }
 
-  List<List<int>> getDataForPlot(List<List<int>> filteredData) {
+  List<List<int>> getDataForPlot() {
+    if(clusteredAverages.isEmpty) {
+      return [];
+    }
+    List<List<int>> filteredData = clusteredAverages;
     List<List<int>> dataForPlot = [];
 
     for(int i = 0; i < filteredData.length; i++) {

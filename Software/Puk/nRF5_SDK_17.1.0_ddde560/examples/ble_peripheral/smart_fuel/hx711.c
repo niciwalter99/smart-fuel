@@ -22,14 +22,15 @@
 #include "nrf_log.h"
 NRF_LOG_MODULE_REGISTER();
 
+#define PD_SCK                    28   
+#define DOUT                      29   
+
 /* Defines frequency and duty cycle for clock signal - default: 1 MHz 50%*/  
 #define TIMER_COUNTERTOP          32
 #define TIMER_COMPARE             16
 
-// Pinout
-#define PD_SCK                    28   
-#define DOUT                      29    
-#define VDD                       30  // Note: Depending on design, GPIO may not be able to source enough current for hx711 and loadcell.    
+
+// Note: Depending on design, GPIO may not be able to source enough current for hx711 and loadcell.    
 
 /* HX711 ADC resolution in bits */
 #define ADC_RES                   24

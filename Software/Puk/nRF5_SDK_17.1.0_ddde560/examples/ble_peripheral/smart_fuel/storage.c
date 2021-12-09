@@ -216,6 +216,25 @@ fds_stat_t storage_init(void) {
   return stat;
 }
 
+//void get_record_by_order(fds_record_desc_t* desc, uint8_t num) {
+//  ret_code_t rc;
+//  fds_find_token_t  tok  = {0};
+//  // Find Record by order
+//  while(fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok) == NRF_SUCCESS) {
+//     fds_flash_record_t config = {0};
+
+//      /* Open the record and read its contents. */
+//      rc = fds_record_open(&desc, &config);
+//      APP_ERROR_CHECK(rc);
+
+//      if(config.p_data.global_index == num) {
+//        break;
+//      }
+//      rc = fds_record_close(&desc);
+//      APP_ERROR_CHECK(rc);
+
+//}
+
 void write_boot_count(uint8_t boot_count) {
   ret_code_t rc;
 
@@ -226,6 +245,15 @@ void write_boot_count(uint8_t boot_count) {
   for(int i = 0; i < records_written; i++) {
     rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
   }
+
+//  // Find Record by recordID
+//  while(fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok) == NRF_SUCCESS) {
+//    if(desc.record_id == 0x00) {
+//      break;
+//    }
+//  }
+
+//  }
 
 if (rc == NRF_SUCCESS)
     {
@@ -290,6 +318,9 @@ if (rc == NRF_SUCCESS)
           else if(rc == FDS_ERR_RECORD_TOO_LARGE) {
             NRF_LOG_ERROR("Record is too big");
           }
+          else if(rc == FDS_ERR_NO_SPACE_IN_QUEUES) {
+            NRF_LOG_ERROR("No Space in Queue");
+          }
           else
           {
               APP_ERROR_CHECK(rc);
@@ -304,6 +335,9 @@ if (rc == NRF_SUCCESS)
         init_cfg.index++;
         /* Close the record when done reading. */
         rc = fds_record_close(&desc);
+        if(rc != NRF_SUCCESS) {
+          NRF_LOG_INFO("An Error occured during CLosing File, please Check %d",rc);
+          }
         APP_ERROR_CHECK(rc);
 
         /* Write the updated record to flash. */
@@ -312,8 +346,14 @@ if (rc == NRF_SUCCESS)
         {
             NRF_LOG_INFO("No space in flash, delete some records to update the config file.");
         }
+        else if(rc == FDS_ERR_NO_SPACE_IN_QUEUES) {
+            NRF_LOG_ERROR("No Space in Queue");
+          }
         else
         {
+        if(rc != NRF_SUCCESS) {
+         NRF_LOG_INFO("An Error occured, please Check %d",rc);
+          }
             APP_ERROR_CHECK(rc);
         }
       }
@@ -397,7 +437,7 @@ uint8_t* get_stored_data(uint8_t * stored_data,uint8_t record_count)  {
 
         if(rc == NRF_SUCCESS) {
         water_level_head_file * p_cfg = (water_level_head_file *)(frec.p_data);
-        NRF_LOG_INFO("Return %d", p_cfg->global_index);
+        NRF_LOG_INFO("Return with global index %d", p_cfg->global_index);
 
         for(int i = 0 ; i< 4000; i++) {
             stored_data[i] = p_cfg->weigth[i];

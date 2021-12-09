@@ -700,7 +700,7 @@ static void lfclk_config(void)
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
-    nrf_gpio_pin_set(30);
+    nrf_gpio_pin_set(VDD);
     nrf_delay_ms(200);
     hx711_start(true);
     
@@ -780,7 +780,7 @@ void hx711_callback(hx711_evt_t evt, int value)
           int value_with_offset = (value - hx711_offset);
           uint32_t weigth = 0;
           if (value_with_offset > 0) {
-            weigth = value_with_offset / 216;
+            weigth = value_with_offset / -216;
           } 
           if(!wait_for_delete) {
             write_boot_count(weigth / 10);
@@ -790,7 +790,7 @@ void hx711_callback(hx711_evt_t evt, int value)
           //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
           //get_data_information(m_conn_handle, &m_lbs);
           //NRF_LOG_INFO("ADC measuremement %d", weigth);
-          nrf_gpio_pin_clear(30);
+          nrf_gpio_pin_clear(VDD);
         }
     }
     else
@@ -811,7 +811,7 @@ int main(void)
     // Initialize.
     hx711_init(INPUT_CH_A_128, hx711_callback);
     log_init();
-    leds_init();
+    //leds_init();
     timers_init();
     NRF_LOG_INFO("Blinky example started.");
 
