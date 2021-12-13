@@ -44,18 +44,18 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="739" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.c" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="714" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="3" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../storage.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../storage.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="77" y="32" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../hx711.c" selected="0" top="14" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="42" y="785" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.c" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="772" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/main.c" useBinaryEdit="0" left="0" path="../../../storage.h" selected="0" top="12" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="28" y="393" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../storage.c" selected="0" top="21" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="186" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../hx711.c" selected="0" top="10" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="66" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/ble/ble_services/ble_lbs/ble_lbs.h" selected="0" top="43" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="38" y="85" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/drivers/include/nrfx_rtc.h" selected="0" top="44" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="11462" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="11398" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="32" y="7669" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../config/sdk_config.h" selected="0" top="7666" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/storage.h" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/fds/fds.h" selected="0" top="114" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="28" y="53" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/fds/fds.c" selected="0" top="18" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="24" y="41" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/fstorage/nrf_fstorage.c" selected="0" top="26" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="32" y="70" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/main.c" useBinaryEdit="0" left="0" path="../../../../../../integration/nrfx/legacy/nrf_drv_rtc.h" selected="0" top="33" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="9" y="6" useTextEdit="1" openedFrom="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.c" useBinaryEdit="0" left="0" path="../../../hx711.h" selected="0" top="3" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="smart_fuel" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/modules/nrfx/drivers/src" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="smart_fuel" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

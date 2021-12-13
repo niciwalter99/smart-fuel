@@ -5,7 +5,6 @@
 #include <stdbool.h>
 
 // Pinout 
-#define VDD                       20  
 
 
 typedef enum

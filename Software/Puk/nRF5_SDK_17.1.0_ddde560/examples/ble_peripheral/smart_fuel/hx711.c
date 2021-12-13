@@ -22,8 +22,9 @@
 #include "nrf_log.h"
 NRF_LOG_MODULE_REGISTER();
 
-#define PD_SCK                    28   
-#define DOUT                      29   
+#define PD_SCK                    29   
+#define DOUT                      31
+#define VDD                       30     
 
 /* Defines frequency and duty cycle for clock signal - default: 1 MHz 50%*/  
 #define TIMER_COUNTERTOP          32

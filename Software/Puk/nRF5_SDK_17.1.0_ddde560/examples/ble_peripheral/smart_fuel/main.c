@@ -65,6 +65,7 @@
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
 #include "nrf_delay.h"
+#include "math.h"
 
 #include "hx711.h"
 #include "nrf_drv_rtc.h" //#define NRFX_TIMER0_ENABLED 1
@@ -305,7 +306,7 @@ static void send_data() {
      else if(packets_sent > 19) {
         break; 
      }
-      NRF_LOG_INFO("Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
+      //NRF_LOG_INFO("Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
       
       
 
@@ -318,7 +319,7 @@ static void send_data() {
       uint32_t ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
           if(ret == NRF_ERROR_RESOURCES){
           // Queue is full
-          NRF_LOG_INFO("Queue is full Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
+          //NRF_LOG_INFO("Queue is full Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
             break;
            }
            else if(ret != NRF_SUCCESS){
@@ -497,8 +498,8 @@ __STATIC_INLINE void fnOnNotificationComplete( ble_evt_t const * p_ble_evt)
      tx_success += p_evt_complete->count;
 
 
-     NRF_LOG_INFO("Count is %d", p_evt_complete->count);   
-    NRF_LOG_INFO("Success %d, packets size %d", tx_success, packet_size);
+     //NRF_LOG_INFO("Count is %d", p_evt_complete->count);   
+    //NRF_LOG_INFO("Success %d, packets size %d", tx_success, packet_size);
     if(tx_success >= packet_size){
     
       tx_success = 0;
@@ -700,7 +701,7 @@ static void lfclk_config(void)
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
-    nrf_gpio_pin_set(VDD);
+    nrf_gpio_pin_set(30);
     nrf_delay_ms(200);
     hx711_start(true);
     
@@ -780,17 +781,18 @@ void hx711_callback(hx711_evt_t evt, int value)
           int value_with_offset = (value - hx711_offset);
           uint32_t weigth = 0;
           if (value_with_offset > 0) {
-            weigth = value_with_offset / -216;
+            weigth = value_with_offset / 216;
           } 
           if(!wait_for_delete) {
-            write_boot_count(weigth / 10);
+            uint8_t rounded_value = round(weigth / 10.0f);
+            write_boot_count(rounded_value);
           } else {
             NRF_LOG_INFO("Wait for Delete end");
           }
           //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
           //get_data_information(m_conn_handle, &m_lbs);
-          //NRF_LOG_INFO("ADC measuremement %d", weigth);
-          nrf_gpio_pin_clear(VDD);
+          NRF_LOG_INFO("Weight value %d", weigth);
+          nrf_gpio_pin_clear(30);
         }
     }
     else
@@ -811,7 +813,7 @@ int main(void)
     // Initialize.
     hx711_init(INPUT_CH_A_128, hx711_callback);
     log_init();
-    //leds_init();
+    leds_init();
     timers_init();
     NRF_LOG_INFO("Blinky example started.");
 

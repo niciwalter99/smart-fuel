@@ -65,14 +65,12 @@ bool wait_for_delete = false;
 static void on_write(ble_lbs_t * p_lbs, ble_evt_t const * p_ble_evt)
 {
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
-    NRF_LOG_INFO("WRITTE DATA");
 
     if ((p_evt_write->handle == p_lbs->button_char_handles.value_handle)
         && (p_evt_write->len == 1))
         NRF_LOG_INFO("Data ready");
         if(p_evt_write->data[0] == 2) {  //Write 1
         NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
-        NRF_LOG_INFO("Write the DaTATAAAAAAAAAAAAA");
            p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, 0);
         
         }
@@ -211,7 +209,7 @@ uint32_t ble_lbs_on_button_change(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8
     params.p_data = button_state;
     params.p_len  = &len;
 
-    NRF_LOG_INFO("Send Value %d",button_state[0]);
+    //NRF_LOG_INFO("Send Value %d",button_state[0]);
 
     uint32_t ret = sd_ble_gatts_hvx(conn_handle, &params);
     if(ret != NRF_SUCCESS && ret !=NRF_ERROR_RESOURCES) 

@@ -216,24 +216,39 @@ fds_stat_t storage_init(void) {
   return stat;
 }
 
-//void get_record_by_order(fds_record_desc_t* desc, uint8_t num) {
-//  ret_code_t rc;
-//  fds_find_token_t  tok  = {0};
-//  // Find Record by order
-//  while(fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok) == NRF_SUCCESS) {
-//     fds_flash_record_t config = {0};
+bool get_record_by_order(fds_record_desc_t* desc,fds_find_token_t* tok, uint8_t num) {
+  ret_code_t rc;
+  // Find Record by order
+  while(fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, desc, tok) == NRF_SUCCESS) {
+     fds_flash_record_t config = {0};
 
-//      /* Open the record and read its contents. */
-//      rc = fds_record_open(&desc, &config);
-//      APP_ERROR_CHECK(rc);
+      /* Open the record and read its contents. */
+      rc = fds_record_open(desc, &config);
+      APP_ERROR_CHECK(rc);
+  
+      water_level_head_file * storage_file = (water_level_head_file *)(config.p_data);
+      if(storage_file->global_index == num) {
+        NRF_LOG_INFO("Found Record with global index %d", num);
+        rc = fds_record_close(desc);
+        APP_ERROR_CHECK(rc);
+        return true;
+      }
+      rc = fds_record_close(desc);
+      APP_ERROR_CHECK(rc);
+      }
+      NRF_LOG_INFO("No Record found with global index %d", num);
+     return false;
+}
 
-//      if(config.p_data.global_index == num) {
-//        break;
-//      }
-//      rc = fds_record_close(&desc);
-//      APP_ERROR_CHECK(rc);
-
-//}
+  // Find Record by recordID
+void get_record_by_id(uint16_t id, fds_record_desc_t* desc) {
+  fds_find_token_t  tok  = {0};
+  while(fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok) == NRF_SUCCESS) {
+    if(desc->record_id == id) {
+      break;
+    }
+  }
+}
 
 void write_boot_count(uint8_t boot_count) {
   ret_code_t rc;
@@ -242,20 +257,15 @@ void write_boot_count(uint8_t boot_count) {
 
   fds_record_desc_t desc = {0};
   fds_find_token_t  tok  = {0};
-  for(int i = 0; i < records_written; i++) {
-    rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
-  }
+  bool found_record = get_record_by_order(&desc,&tok,  records_written - 1);
 
-//  // Find Record by recordID
-//  while(fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok) == NRF_SUCCESS) {
-//    if(desc.record_id == 0x00) {
-//      break;
-//    }
-//  }
+  //for(int i = 0; i < records_written; i++) {
+  //  rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
+  //}
 
 //  }
 
-if (rc == NRF_SUCCESS)
+if (found_record)
     {
         /* A config file is in flash. Let's update it. */
         fds_flash_record_t config = {0};
@@ -285,10 +295,12 @@ if (rc == NRF_SUCCESS)
 
          // Look if next Record exists (e.g. after Reboot)
 
-         rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
+         found_record = get_record_by_order(&desc, &tok, global_index);
+
+         //rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
          fds_flash_record_t config = {0};
 
-        if(rc == NRF_SUCCESS) {
+        if(found_record) {
           NRF_LOG_INFO("Found next Record, use this instead");
           /* Open the record and read its contents. */
           rc = fds_record_open(&desc, &config); 
@@ -331,7 +343,7 @@ if (rc == NRF_SUCCESS)
         
         
         init_cfg.weigth[init_cfg.index] = boot_count;
-        NRF_LOG_INFO("Config file found, updating boot count to %d. %d", init_cfg.index, init_cfg.weigth[init_cfg.index]);
+        NRF_LOG_INFO("Updating index to %d and write value %d to glob index %d", init_cfg.index, init_cfg.weigth[init_cfg.index], init_cfg.global_index);
         init_cfg.index++;
         /* Close the record when done reading. */
         rc = fds_record_close(&desc);
@@ -398,12 +410,13 @@ uint8_t* get_stored_data(uint8_t * stored_data,uint8_t record_count)  {
 
 
     NRF_LOG_INFO("Get Record number %d", record_count);
+  
+    bool found_record = get_record_by_order(&desc, &tok, record_count);
 
-
-     for(int i = 0; i <(record_count+1); i++) {
-      rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
-    }
-    if( rc != NRF_SUCCESS) {
+    // for(int i = 0; i <(record_count+1); i++) {
+    //  rc = fds_record_find(WATER_LEVEL_HEAD_FILE, WATER_LEVEL_REC_KEY, &desc, &tok);
+    //}
+    if(!found_record) {
       NRF_LOG_INFO("NO RECORD FOUND!");
       return stored_data;
     }
@@ -440,7 +453,7 @@ uint8_t* get_stored_data(uint8_t * stored_data,uint8_t record_count)  {
         NRF_LOG_INFO("Return with global index %d", p_cfg->global_index);
 
         for(int i = 0 ; i< 4000; i++) {
-            stored_data[i] = p_cfg->weigth[i];
+            stored_data[i] =  p_cfg->weigth[i];
         }
 
         rc = fds_record_close(&desc);
