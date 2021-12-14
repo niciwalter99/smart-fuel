@@ -59,13 +59,12 @@
 #include "nrf_sdh_ble.h"
 #include "boards.h"
 #include "app_timer.h"
-#include "app_button.h"
-#include "ble_lbs.h"
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
 #include "nrf_delay.h"
 #include "math.h"
+#include "ble_sf.h"
 
 #include "hx711.h"
 #include "nrf_drv_rtc.h" //#define NRFX_TIMER0_ENABLED 1
@@ -105,7 +104,8 @@
 #define DEAD_BEEF                       0xDEADBEEF                              /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 
-BLE_LBS_DEF(m_lbs);                                                             /**< LED Button Service instance. */
+//BLE_LBS_DEF(m_lbs);
+BLE_SF_DEF(m_sf);                                                             /**< LED Button Service instance. */
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
 NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 
@@ -232,7 +232,7 @@ static void advertising_init(void)
     ble_advdata_t advdata;
     ble_advdata_t srdata;
 
-    ble_uuid_t adv_uuids[] = {{LBS_UUID_SERVICE, m_lbs.uuid_type}};
+    ble_uuid_t adv_uuids[] = {{LBS_UUID_SERVICE, m_sf.uuid_type}};
 
     // Build and set advertising data.
     memset(&advdata, 0, sizeof(advdata));
@@ -306,17 +306,11 @@ static void send_data() {
      else if(packets_sent > 19) {
         break; 
      }
-      //NRF_LOG_INFO("Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
-      
-      
-
-      //NRF_LOG_INFO("packets sent is now %d", packets_sent);
-      //NRF_LOG_INFO("First Value is %d", data_packet_for_send[packets_sent*200]);
       uint8_t packet[200];
       for(int i=0; i < 200; i++) {
         packet[i] = data_packet_for_send[packets_sent*200 + i];
       }
-      uint32_t ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
+      uint32_t ret = send_packet(m_conn_handle, &m_sf, &packet);
           if(ret == NRF_ERROR_RESOURCES){
           // Queue is full
           //NRF_LOG_INFO("Queue is full Packets sent: %d, indexSend %d, packet Size %d tx succ %d", packets_sent, index_for_send, packet_size, tx_success);
@@ -340,7 +334,7 @@ static void send_data() {
  * @param[in] p_lbs     Instance of LED Button Service to which the write applies.
  * @param[in] led_state Written/desired state of the LED.
  */
-static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t led_state)
+static void led_write_handler(uint16_t conn_handle, ble_sf_t * p_sf, uint8_t led_state)
 {
   if(led_state == 2) {
 
@@ -379,7 +373,7 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t l
     index_for_send = 0;
     packets_sent = 1;
     tx_success = 0;
-    ret = ble_lbs_on_button_change(m_conn_handle, &m_lbs, &packet);
+    ret = send_packet(m_conn_handle, &m_sf, &packet);
   
         if(ret != NRF_SUCCESS) 
           NRF_LOG_ERROR("ERROR SENDING");
@@ -402,7 +396,7 @@ static void led_write_handler(uint16_t conn_handle, ble_lbs_t * p_lbs, uint8_t l
 static void services_init(void)
 {
     ret_code_t         err_code;
-    ble_lbs_init_t     init     = {0};
+    ble_sf_init_t     init     = {0};
     nrf_ble_qwr_init_t qwr_init = {0};
 
     // Initialize Queued Write Module.
@@ -414,7 +408,7 @@ static void services_init(void)
     // Initialize LBS.
     init.led_write_handler = led_write_handler;
 
-    err_code = ble_lbs_init(&m_lbs, &init);
+    err_code = ble_sf_init(&m_sf, &init);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -635,54 +629,6 @@ static void ble_stack_init(void)
 }
 
 
-/**@brief Function for handling events from the button handler module.
- *
- * @param[in] pin_no        The pin that the event applies to.
- * @param[in] button_action The button action (press/release).
- */
-static void button_event_handler(uint8_t pin_no, uint8_t button_action)
-{
-    ret_code_t err_code;
-
-    switch (pin_no)
-    {
-        case LEDBUTTON_BUTTON:
-            NRF_LOG_INFO("Send button state change.");
-            err_code = ble_lbs_on_button_change(m_conn_handle, &m_lbs, 55);
-            if (err_code != NRF_SUCCESS &&
-                err_code != BLE_ERROR_INVALID_CONN_HANDLE &&
-                err_code != NRF_ERROR_INVALID_STATE &&
-                err_code != BLE_ERROR_GATTS_SYS_ATTR_MISSING)
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-            break;
-
-        default:
-            APP_ERROR_HANDLER(pin_no);
-            break;
-    }
-}
-
-
-/**@brief Function for initializing the button handler module.
- */
-static void buttons_init(void)
-{
-    ret_code_t err_code;
-
-    //The array must be static because a pointer to it will be saved in the button handler module.
-    static app_button_cfg_t buttons[] =
-    {
-        {LEDBUTTON_BUTTON, false, BUTTON_PULL, button_event_handler}
-    };
-
-    err_code = app_button_init(buttons, ARRAY_SIZE(buttons),
-                               BUTTON_DETECTION_DELAY);
-    APP_ERROR_CHECK(err_code);
-}
-
-
 static void log_init(void)
 {
     ret_code_t err_code = NRF_LOG_INIT(NULL);
@@ -701,12 +647,12 @@ static void lfclk_config(void)
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
-    nrf_gpio_pin_set(30);
+    nrf_gpio_pin_set(22);
     nrf_delay_ms(200);
     hx711_start(true);
     
     nrf_drv_rtc_counter_clear(&rtc);
-    nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    nrf_drv_rtc_cc_set(&rtc,0,12 * 8,true);
 
 }
 
@@ -727,7 +673,7 @@ static void rtc_config(void)
     ////nrf_drv_rtc_tick_enable(&rtc,true);
 
     ////Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,12 * 8,true);
     APP_ERROR_CHECK(err_code);
 
     ////Power on RTC instance
@@ -792,7 +738,7 @@ void hx711_callback(hx711_evt_t evt, int value)
           //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
           //get_data_information(m_conn_handle, &m_lbs);
           NRF_LOG_INFO("Weight value %d", weigth);
-          nrf_gpio_pin_clear(30);
+          nrf_gpio_pin_clear(22);
         }
     }
     else
@@ -833,7 +779,6 @@ int main(void)
     //NRF_LOG_INFO("Get Boot Count %d", p[1]);
 
     power_management_init();
-    buttons_init();
     gap_params_init();
     gatt_init();
     services_init();

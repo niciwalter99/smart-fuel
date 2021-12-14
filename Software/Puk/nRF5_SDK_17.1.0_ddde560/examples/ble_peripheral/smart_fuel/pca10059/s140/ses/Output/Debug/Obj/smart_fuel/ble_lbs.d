@@ -53,7 +53,7 @@ Output/Debug/Obj/smart_fuel/ble_lbs.o: \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/util/nordic_common.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/util/nrf_assert.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/util/sdk_errors.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/storage.h \
+ ../../../storage/storage.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/fds/fds.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/util/app_util_platform.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/softdevice/s140/headers/nrf_soc.h \

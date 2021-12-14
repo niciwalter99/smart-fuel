@@ -68,11 +68,8 @@ static void on_write(ble_lbs_t * p_lbs, ble_evt_t const * p_ble_evt)
 
     if ((p_evt_write->handle == p_lbs->button_char_handles.value_handle)
         && (p_evt_write->len == 1))
-        NRF_LOG_INFO("Data ready");
         if(p_evt_write->data[0] == 2) {  //Write 1
-        NRF_LOG_INFO("Data %d",p_evt_write->data[0]);
            p_lbs->led_write_handler(p_ble_evt->evt.gap_evt.conn_handle, p_lbs, 0);
-        
         }
         
         if(p_evt_write->data[0] == 3) {

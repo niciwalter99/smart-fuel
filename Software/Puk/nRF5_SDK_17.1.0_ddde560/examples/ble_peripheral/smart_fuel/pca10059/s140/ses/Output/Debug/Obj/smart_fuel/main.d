@@ -89,15 +89,15 @@ Output/Debug/Obj/smart_fuel/main.o: \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/experimental_section_vars/nrf_section.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/log/nrf_log_types.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/sortlist/nrf_sortlist.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/button/app_button.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/ble_services/ble_lbs/ble_lbs.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/storage.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/fds/fds.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/delay/nrf_delay.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_gatt/nrf_ble_gatt.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_qwr/nrf_ble_qwr.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/pwr_mgmt/nrf_pwr_mgmt.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/delay/nrf_delay.h \
+ /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/math.h \
+ ../../../bluetooth/ble_sf.h ../../../storage/storage.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/fds/fds.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/ble_services/ble_lbs/ble_lbs.h \
+ ../../../sensors/hx711.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/integration/nrfx/legacy/nrf_drv_rtc.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/modules/nrfx/drivers/include/nrfx_rtc.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/modules/nrfx/hal/nrf_rtc.h \
@@ -105,7 +105,6 @@ Output/Debug/Obj/smart_fuel/main.o: \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/modules/nrfx/drivers/include/nrfx_clock.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/modules/nrfx/hal/nrf_clock.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/modules/nrfx/drivers/include/nrfx_power_clock.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/storage.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/log/nrf_log.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/log/src/nrf_log_internal.h \
  /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/libraries/log/nrf_log_types.h \

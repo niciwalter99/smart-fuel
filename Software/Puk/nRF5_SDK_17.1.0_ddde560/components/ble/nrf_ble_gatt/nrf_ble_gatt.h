@@ -58,7 +58,7 @@
 #include "app_util.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C" {/Users/nicolaswalter/Dokumente/Smart Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/components/ble/nrf_ble_gatt/nrf_ble_gatt.h
 #endif
 
 /**@brief   Macro for defining a nrf_ble_gatt instance.

@@ -1,9 +1,9 @@
 Output/Release/Obj/ble_app_blinky_pca10056_s140/hx711.o: \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.c \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/sensors/hx711.c \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdint.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/string.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/__crossworks.h \
- /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/hx711.h \
+ /Users/nicolaswalter/Dokumente/Smart\ Fuel/Software/Puk/nRF5_SDK_17.1.0_ddde560/examples/ble_peripheral/smart_fuel/sensors/hx711.h \
  /Applications/SEGGER\ Embedded\ Studio\ for\ ARM\ 5.66/include/stdbool.h \
  ../../../../../../integration/nrfx/legacy/nrf_drv_gpiote.h \
  ../../../../../../modules/nrfx/drivers/include/nrfx_gpiote.h \
