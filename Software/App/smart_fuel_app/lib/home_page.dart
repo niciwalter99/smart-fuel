@@ -10,10 +10,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smart_fuel_app/drink_stats/data.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
-import 'package:simple_cluster/src/dbscan.dart';
-import 'dart:convert';
-
-
+import 'package:smart_fuel_app/background_service/notification.dart';
+import 'package:background_fetch/background_fetch.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -25,81 +23,101 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-Future<String> calculate(List<List<double>> inputData) async {
-  print('function');
-
-  DBSCAN dbscan = DBSCAN(
-    epsilon: 2,
-    minPoints: 3,
-  );
-  dbscan.run(inputData);
-  print('end');
-
-  return dbscan.label.toString();
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   double drunken_water = 1340;
-  List<List<double>> inputData = [];
   List<List<int>> lists = [];
-  List<List<int>> filteredData = [];
-  var cluster = [];
+
   bool notification_listener_set = false;
   int receivingPacket = 1;
 
   _readData(characteristic) async {
     characteristic.value.listen((value) {
-      //List<int> readData = new List.from(value);
-      print(value);
       lists.add(value);
-      print(value.length);
       receivingPacket++;
-
-      // if (readData.isNotEmpty && readData != []) {
-      //   receivingPacket++;
-      //   lists.add(value);
-      //   print(value);
-      // }
+      print(value.length);
+      print(value);
     });
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch.
+    int status = await BackgroundFetch.configure(BackgroundFetchConfig(
+      minimumFetchInterval: 15,
+      stopOnTerminate: false,
+      enableHeadless: true,
+    ), (String taskId) async {  // <-- Event handler
+      // This is the fetch-event callback.
+      // print("[BackgroundFetch] Event received $taskId");
+      // setState(() {
+      //   _events.insert(0, new DateTime.now());
+      // });
+      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+      // for taking too long in the background.
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) async {  // <-- Task timeout handler.
+      // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      BackgroundFetch.finish(taskId);
+    });
+    print('[BackgroundFetch] configure success: $status');
+    // setState(() {
+    //   _status = status;
+    // });
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    //if (!mounted) return;
+
+    BackgroundFetch.start().then((int status) {
+      print('[BackgroundFetch] start success: $status');
+    }).catchError((e) {
+      print('[BackgroundFetch] start FAILURE: $e');
+    });
+  }
+
+
+  @override
+  void initState() {
+    NotificationService().init();
+    initPlatformState();
   }
 
   void PushDrinkStatsWidget() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => DrinkStats(cluster: cluster, inputData: inputData)),
+      MaterialPageRoute(
+          builder: (context) =>
+              DrinkStats(inputData: lists.expand((i) => i).toList())),
     );
   }
 
   Future<Null> _refreshLocalGallery() async {
+
+
     FlutterBlue flutterBlue = FlutterBlue.instance;
-    flutterBlue.startScan(timeout: Duration(seconds: 4));
+    flutterBlue.startScan(timeout: Duration(seconds: 6));
     BluetoothDevice? waterBottle;
     receivingPacket = 1;
     lists = [];
 
     print(FlutterBlue.instance.state);
 
-    // if(FlutterBlue.instance.state == BluetoothState.off) {
-    //   print(" no BL");
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //     content: Text("Bitte schalte dein Bluetooth an."),
-    //   ));
-    //   return;
-    // }
-
 // Listen to scan results
     var subscription = flutterBlue.scanResults.listen((results) {
       // do something with scan results
       for (ScanResult r in results) {
+        print(r.device);
         if (r.device.name == "Smart Fuel Prototype") {
           waterBottle = r.device;
         }
       }
     });
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 6));
     flutterBlue.stopScan();
 
     // If device is found
-    if(waterBottle != null) {
+    if (waterBottle != null) {
       print(waterBottle!.name);
       await waterBottle!.connect();
 
@@ -123,25 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
         await Future.delayed(const Duration(milliseconds: 500));
         i++;
       }
-      print(lists.length);
       waterBottle!.disconnect();
-
-      print("Start async calculation");
-
-
-      //data = Data(inputData);
-
-      print('start calc');
-      var unpackedData = lists.expand((i) => i).toList();
-
-      for (int i = 0; i < unpackedData.length; i++) {
-        inputData.add([i.toDouble(), unpackedData[i].toDouble()]);
-      }
-      Future.delayed(Duration.zero,() async {
-        String i = await compute(calculate, inputData);
-        cluster = json.decode(i);
-      });
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Gerät konnte nicht gefunden werden"),
@@ -231,9 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(12.0),
                       child: SizedBox(
                         height: 50,
-                        child: SvgPicture.asset(
-                            "assets/glass_icon.svg"
-                        ),
+                        child: SvgPicture.asset("assets/glass_icon.svg"),
                       ),
                     ),
                     Text(drunken_water.round().toString(),
@@ -267,7 +265,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "Wiegen",
                     subTitle: "Deine Flasche als Waage",
                     iconPath: "assets/waage_icon.svg",
-                    onPressedFunction: PushDrinkStatsWidget,
+                    onPressedFunction: () {
+                      NotificationService().showNotificationWithNoBadge(
+                          "Trinkerinnerung", "Hey! Trink mal wieder etwas...");
+                      print('notify');
+                    },
                   ),
                 ),
               ),
@@ -291,7 +293,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "Einstellungen",
                     subTitle: "Konto, Benachrichtigungen ...",
                     iconPath: "assets/setting_icon.svg",
-                    onPressedFunction: PushDrinkStatsWidget,
+                    onPressedFunction: () async {
+                      BackgroundFetch.start().then((int status) {
+                        print('[BackgroundFetch] start success: $status');
+                      }).catchError((e) {
+                        print('[BackgroundFetch] start FAILURE: $e');
+                      });
+                    },
                   ),
                 ),
               )

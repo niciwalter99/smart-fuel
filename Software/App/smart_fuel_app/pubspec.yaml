@@ -39,6 +39,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^1.0.0
   flutter_launcher_icons: "^0.9.1"
   syncfusion_flutter_gauges: ^19.3.43
   liquid_pull_to_refresh: ^3.0.0
@@ -47,14 +53,11 @@ dev_dependencies:
   fluttertoast: ^8.0.8
   simple_cluster: ^0.3.0
   flutter_svg: ^1.0.0
+  flutter_local_notifications: ^9.1.5
+  shared_preferences: ^2.0.6
+  background_fetch: ^1.0.3
+  logger: ^1.1.0
 
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^1.0.0
 
 flutter_icons:
   android: true

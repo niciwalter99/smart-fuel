@@ -87,7 +87,7 @@
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 #define APP_BLE_CONN_CFG_TAG            1                                       /**< A tag identifying the SoftDevice BLE configuration. */
 
-#define APP_ADV_INTERVAL                64                                      /**< The advertising interval (in units of 0.625 ms; this value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL                3200                                      /**< The advertising interval (in units of 0.625 ms; this value corresponds to 40 ms). */
 #define APP_ADV_DURATION                BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED   /**< The advertising time-out (in units of seconds). When set to 0, we will never time out. */
 
 
@@ -487,6 +487,8 @@ static void advertising_start(void)
     bsp_board_led_on(ADVERTISING_LED);
 }
 
+
+
 static bool connected = false;
 static bool dataSend = false;
 
@@ -664,9 +666,6 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
     }
 }
 
-
-/**@brief Function for initializing the button handler module.
- */
 static void buttons_init(void)
 {
     ret_code_t err_code;
@@ -681,7 +680,6 @@ static void buttons_init(void)
                                BUTTON_DETECTION_DELAY);
     APP_ERROR_CHECK(err_code);
 }
-
 
 static void log_init(void)
 {
@@ -701,12 +699,10 @@ static void lfclk_config(void)
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
-    nrf_gpio_pin_set(30);
-    nrf_delay_ms(200);
     hx711_start(true);
     
     nrf_drv_rtc_counter_clear(&rtc);
-    nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    nrf_drv_rtc_cc_set(&rtc,0,5 * 8,true);
 
 }
 
@@ -727,7 +723,7 @@ static void rtc_config(void)
     ////nrf_drv_rtc_tick_enable(&rtc,true);
 
     ////Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,5 * 8,true);
     APP_ERROR_CHECK(err_code);
 
     ////Power on RTC instance
@@ -762,8 +758,10 @@ static void idle_state_handle(void)
 
 void hx711_callback(hx711_evt_t evt, int value)
 {
+    hx711_stop();
+    //hx711_power_down();
     uint16_t length = sizeof(int);
-
+    
     
     
     if(evt == DATA_READY)
@@ -792,7 +790,6 @@ void hx711_callback(hx711_evt_t evt, int value)
           //ble_lbs_on_button_change(m_conn_handle, &m_lbs, weigth);
           //get_data_information(m_conn_handle, &m_lbs);
           NRF_LOG_INFO("Weight value %d", weigth);
-          nrf_gpio_pin_clear(30);
         }
     }
     else
@@ -813,7 +810,7 @@ int main(void)
     // Initialize.
     hx711_init(INPUT_CH_A_128, hx711_callback);
     log_init();
-    leds_init();
+    //leds_init();
     timers_init();
     NRF_LOG_INFO("Blinky example started.");
 

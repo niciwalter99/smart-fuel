@@ -36,7 +36,6 @@
 "Output/Debug/Obj/smart_fuel/system_nrf52840.o"
 "Output/Debug/Obj/smart_fuel/boards.o"
 "Output/Debug/Obj/smart_fuel/nrf_drv_clock.o"
-"Output/Debug/Obj/smart_fuel/nrf_drv_uart.o"
 "Output/Debug/Obj/smart_fuel/nrfx_atomic.o"
 "Output/Debug/Obj/smart_fuel/nrfx_clock.o"
 "Output/Debug/Obj/smart_fuel/nrfx_gpiote.o"

@@ -1,0 +1,4 @@
+#Sat Dec 25 20:10:22 CET 2021
+base.0=/Users/nicolaswalter/Dokumente/Smart Fuel/Software/App/smart_fuel_app/android/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex

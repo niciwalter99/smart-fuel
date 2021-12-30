@@ -377,10 +377,10 @@ if (found_record)
     else
     {
         /* System config not found; write a new one. */
-        NRF_LOG_INFO("Writing config file...");
+        NRF_LOG_INFO("Writing first config file...");
 
         init_cfg.index = 0;
-        init_cfg.global_index;
+        init_cfg.global_index = 0;
         //Set everything to 0 again for new Record
         for(int i = 0; i < DATA_PER_RECORD; i++) {
           init_cfg.weigth[i] = 0;
