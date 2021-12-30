@@ -53,6 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
             requiresCharging: false,
             requiresStorageNotLow: false,
             requiresDeviceIdle: false,
+            startOnBoot: true,
+            forceAlarmManager: true,
             requiredNetworkType: NetworkType.NONE), (String taskId) async {
       // <-- Event handler
       print("[BackgroundFetch] Event received $taskId");

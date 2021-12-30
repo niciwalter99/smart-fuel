@@ -72,6 +72,7 @@
 #include "nrf_drv_clock.h"
 #include "storage.h"
 
+#include "app_mpu.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -104,6 +105,7 @@
 
 #define DEAD_BEEF                       0xDEADBEEF                              /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
+#define VDD_MPU_PIN 25
 
 BLE_LBS_DEF(m_lbs);                                                             /**< LED Button Service instance. */
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
@@ -696,13 +698,25 @@ static void lfclk_config(void)
 
     nrf_drv_clock_lfclk_request(NULL);
 }
+accel_values_t acc_values;
+uint32_t sample_number = 0;
+
+long map(long x, long in_min, long in_max, long out_min, long out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 static void rtc_handler(nrf_drv_rtc_int_type_t int_type)
 {
+    app_mpu_wake_up();
+    nrf_delay_ms(30);
     hx711_start(true);
-    
+    uint32_t err_code = app_mpu_read_accel(&acc_values);
+    NRF_LOG_INFO("\033[3;1HSample # %d\r\nX: %06d\r\nY: %06d\r\nZ: %06d", ++sample_number, acc_values.x, acc_values.y, acc_values.z);
+    NRF_LOG_INFO("X Degree is %d\n Y Degree is %d", map(acc_values.x, -32000, 32000, -90, 90), map(acc_values.y, -32000, 32000, -90, 90));
+    app_mpu_enter_sleep_mode();
     nrf_drv_rtc_counter_clear(&rtc);
-    nrf_drv_rtc_cc_set(&rtc,0,5 * 8,true);
+    nrf_drv_rtc_cc_set(&rtc,0,2 * 8,true);
 
 }
 
@@ -723,7 +737,7 @@ static void rtc_config(void)
     ////nrf_drv_rtc_tick_enable(&rtc,true);
 
     ////Set compare channel to trigger interrupt after COMPARE_COUNTERTIME seconds
-    err_code = nrf_drv_rtc_cc_set(&rtc,0,5 * 8,true);
+    err_code = nrf_drv_rtc_cc_set(&rtc,0,1 * 8,true);
     APP_ERROR_CHECK(err_code);
 
     ////Power on RTC instance
@@ -802,6 +816,23 @@ void hx711_callback(hx711_evt_t evt, int value)
     }
 }
 
+void mpu_init(void)
+{
+
+    ret_code_t ret_code;
+    // Initiate MPU driver
+    ret_code = app_mpu_init();
+    APP_ERROR_CHECK(ret_code); // Check for errors in return value
+    
+    // Setup and configure the MPU with intial values
+    app_mpu_config_t p_mpu_config = MPU_DEFAULT_CONFIG(); // Load default values
+    p_mpu_config.smplrt_div = 19;   // Change sampelrate. Sample Rate = Gyroscope Output Rate / (1 + SMPLRT_DIV). 19 gives a sample rate of 50Hz
+    p_mpu_config.accel_config.afs_sel = AFS_2G; // Set accelerometer full scale range to 2G
+    ret_code = app_mpu_config(&p_mpu_config); // Configure the MPU with above values
+    APP_ERROR_CHECK(ret_code); // Check for errors in return value 
+
+}
+
 
 /**@brief Function for application main entry.
  */
@@ -821,6 +852,7 @@ int main(void)
     ble_stack_init();
     NRF_LOG_INFO("Init Storage");
     storage_init();
+    mpu_init();
     //NRF_LOG_INFO("write boot count");
     write_boot_count(0);
     //NRF_LOG_INFO("get boot ocunt");

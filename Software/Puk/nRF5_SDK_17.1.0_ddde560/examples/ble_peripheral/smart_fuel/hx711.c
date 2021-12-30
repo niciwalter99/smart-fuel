@@ -22,7 +22,7 @@
 #include "nrf_log.h"
 NRF_LOG_MODULE_REGISTER();
 
-#define PD_SCK                    29   
+#define PD_SCK                    30   
 #define DOUT                      31
 #define VDD                       22     
 
