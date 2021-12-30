@@ -14,9 +14,14 @@ import 'dart:developer' as developer;
 
 void backgroundFetchHeadlessTask(HeadlessTask task) async {
 
-  developer.log('Start the Headless Task', name: 'BackgroundTask');
+  if (task.timeout) {
+    // This task has exceeded its allowed running-time.
+    // You must stop what you're doing and immediately .finish(taskId)
+    print("[BackgroundFetch] Headless task timed-out: ${task.taskId}");
+    BackgroundFetch.finish(task.taskId);
+    return;
+  }
 
-  String taskId = task.taskId;
     FlutterBlue flutterBlue = FlutterBlue.instance;
     print(flutterBlue);
     print('Start Scan');
@@ -38,31 +43,20 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
         if (r.device.name == "Smart Fuel Prototype") {
           waterBottle = r.device;
           flutterBlue.stopScan();
+          scan_running = false;
         }
       }
     });
-    await Future.delayed(const Duration(seconds: 6));
-    flutterBlue.stopScan();
 
-    // var subscription = flutterBlue.scanResults.listen((results) {
-    //   print('subscription in stream here');
-    //   // do something with scan results
-    //   for (ScanResult r in results) {
-    //     print("found something");
-    //     if (r.device.name == "Smart Fuel Prototype") {
-    //       waterBottle = r.device;
-    //       print("Found water bottle and stop scan!");
-    //       flutterBlue.stopScan();
-    //       scan_running = false;
-    //     }
-    //   }
-    // });
-    //
-    // Timer(const Duration(seconds: 15), () {
-    //   scan_running = false;
-    //   flutterBlue.stopScan();
-    //   //subscription.cancel();
-    // });
+    Timer(const Duration(seconds: 15), () {
+      scan_running = false;
+      flutterBlue.stopScan();
+      subscription.cancel();
+    });
+
+    while(scan_running) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
 
     print("end of scan");
 
@@ -155,7 +149,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
           "Hey! Deine Flasche wurde nicht gefunden");
     }
 
-  BackgroundFetch.finish(taskId);
+  BackgroundFetch.finish(task.taskId);
 }
 
 void main() async {
