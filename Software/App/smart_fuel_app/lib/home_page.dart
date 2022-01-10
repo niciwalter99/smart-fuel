@@ -12,6 +12,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import 'package:smart_fuel_app/background_service/notification.dart';
 import 'package:background_fetch/background_fetch.dart';
+import 'package:smart_fuel_app/main.dart';
+import 'package:home_widget/home_widget.dart';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -31,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _status = 0;
   List<DateTime> _events = [];
+  int _counter = 0;
 
   _readData(characteristic) async {
     characteristic.value.listen((value) {
@@ -39,6 +43,18 @@ class _MyHomePageState extends State<MyHomePage> {
       print(value.length);
       print(value);
     });
+  }
+
+  void loadData() async {
+    await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0).then((value) {
+      _counter = value!;
+    });
+    setState(() {});
+  }
+
+  Future<void> updateAppWidget() async {
+    await HomeWidget.saveWidgetData<int>('_counter', _counter);
+    await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -54,16 +70,12 @@ class _MyHomePageState extends State<MyHomePage> {
             requiresStorageNotLow: false,
             requiresDeviceIdle: false,
             startOnBoot: true,
-            forceAlarmManager: true,
             requiredNetworkType: NetworkType.NONE), (String taskId) async {
       // <-- Event handler
       print("[BackgroundFetch] Event received $taskId");
-      setState(() {
-        _events.insert(0, DateTime.now());
-      });
-      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
-      // for taking too long in the background.
+      MyApp.getDrinkData();
       BackgroundFetch.finish(taskId);
+
     }, (String taskId) async {
       // <-- Task timeout handler.
       // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
@@ -91,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     NotificationService().init();
     initPlatformState();
+    updateAppWidget();
   }
 
   void PushDrinkStatsWidget() {
@@ -103,7 +116,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _refreshLocalGallery() async {
     FlutterBlue flutterBlue = FlutterBlue.instance;
-    flutterBlue.startScan(timeout: Duration(seconds: 6));
+    //00001523-1212-efde-1523-785feabcd123
+    flutterBlue.startScan(withServices: [Guid("00001523-1212-efde-1523-785feabcd123")],timeout: Duration(seconds: 6));
     BluetoothDevice? waterBottle;
     receivingPacket = 1;
     lists = [];
@@ -129,7 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
       await waterBottle!.connect();
 
       List<BluetoothService> services = await waterBottle!.discoverServices();
-      // print('Services');
+      print('Services');
+      print(services[2]);
       BluetoothCharacteristic bottleData = services[2].characteristics[0];
       await bottleData.setNotifyValue(true);
 

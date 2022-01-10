@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_fuel_app/home_page.dart';
@@ -10,31 +9,46 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:smart_fuel_app/drink_stats/data.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as developer;
+
 
 void backgroundFetchHeadlessTask(HeadlessTask task) async {
-
   if (task.timeout) {
-    // This task has exceeded its allowed running-time.
-    // You must stop what you're doing and immediately .finish(taskId)
     print("[BackgroundFetch] Headless task timed-out: ${task.taskId}");
     BackgroundFetch.finish(task.taskId);
     return;
   }
 
+  MyApp.getDrinkData();
+  BackgroundFetch.finish(task.taskId);
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  static void getDrinkData() async {
     FlutterBlue flutterBlue = FlutterBlue.instance;
     print(flutterBlue);
     print('Start Scan');
-    flutterBlue.startScan(timeout: const Duration(seconds: 10), request_permission: false);
+    flutterBlue.startScan(
+        withServices: [Guid("00001523-1212-efde-1523-785feabcd123")],
+        timeout: const Duration(seconds: 10),
+        request_permission: false);
 
     BluetoothDevice? waterBottle;
     int receivingPacket = 1;
     List<List<int>> lists = [];
 
     bool scan_running = true;
-  print(FlutterBlue.instance.state);
+    print(FlutterBlue.instance.state);
 
-  // Listen to scan results
+    // Listen to scan results
     var subscription = flutterBlue.scanResults.listen((results) {
       // do something with scan results
       print('in Subscription method');
@@ -54,15 +68,15 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
       subscription.cancel();
     });
 
-    while(scan_running) {
+    while (scan_running) {
       await Future.delayed(const Duration(seconds: 1));
     }
 
     print("end of scan");
 
-  List<BluetoothDevice> connectedDevices = await flutterBlue.connectedDevices;
+    List<BluetoothDevice> connectedDevices = await flutterBlue.connectedDevices;
     print(connectedDevices);
-    for(int i = 0; i < connectedDevices.length; i++){
+    for (int i = 0; i < connectedDevices.length; i++) {
       print("Disconnect device ${connectedDevices[i].name}");
       connectedDevices[i].disconnect();
     }
@@ -87,16 +101,6 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
       await bottleData.setNotifyValue(true);
       _readData(bottleData);
 
-      // //final key = inputData!['key']!;
-      // final prefs = await SharedPreferences.getInstance();
-      // if (prefs.getBool('1234567')!){//(prefs.containsKey('1234567')) {
-      //
-      //   print('has been running before, task is successful');
-      // } else {
-      //   await prefs.setBool('1234567', true);
-      //   print('reschedule task');
-      // }
-
       bottleData.write([2]);
 
       // Wait until no Packet is received for 500ms
@@ -119,60 +123,15 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
       print('Water drunk today is: ');
       print(dayStats.sumOfWater);
 
-
       NotificationService().init();
-      NotificationService().showNotificationWithNoBadge(
-          "Trinkerinnerung",
+      NotificationService().showNotificationWithNoBadge("Trinkerinnerung",
           "Hey! Du hast heute erst ${dayStats.sumOfWater} ml getrunken...");
-      // } else {
-
-      // final flutterReactiveBle = FlutterReactiveBle();
-      // flutterReactiveBle.statusStream.listen((status) {
-      //   print('status');
-      //   //code for handling status update
-      // });
-      //
-      // flutterReactiveBle.scanForDevices(withServices: []).listen((device) {
-      //   print(device);
-      //   //code for handling results
-      // }, onError: () {
-      //   //code for handling error
-      // });
-
-      //}
-      // return Future.value(true);
-      // });
     } else {
       NotificationService().init();
       NotificationService().showNotificationWithNoBadge(
-          "Trinkerinnerung",
-          "Hey! Deine Flasche wurde nicht gefunden");
+          "Trinkerinnerung", "Hey! Deine Flasche wurde nicht gefunden");
     }
-
-  BackgroundFetch.finish(task.taskId);
-}
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Workmanager().cancelAll();
-  // print('init');
-  // final prefs = await SharedPreferences.getInstance();
-  // await prefs.setBool('1234567', false);
-  // Workmanager().initialize(
-  //     callbackDispatcher, // The top level function, aka callbackDispatcher
-  //     isInDebugMode: true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  // );
-  // //Workmanager().registerOneOffTask("1", "simpleTask"); //Android only (see below)
-  // Workmanager().registerPeriodicTask(
-  //   "3",
-  //   "Simple Task"
-  // );
-  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  }
 
   // This widget is the root of your application.
   @override
