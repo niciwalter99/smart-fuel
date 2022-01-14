@@ -41,7 +41,15 @@ class AppWidgetProvider : HomeWidgetProvider() {
                 if(first == 0) {
                     counterText = "${sec} ml"
                 } else {
-                    counterText = "${first}.${sec} ml"
+                    if (sec == 0){
+                        counterText = "${first}.000 ml"
+                    }
+                    else if (sec < 100) {
+                        counterText = "${first}.0${sec} ml"
+                    }
+                    else {
+                        counterText = "${first}.${sec} ml"
+                    }
                 }
 
 

@@ -33,7 +33,7 @@ class CircularStatus extends StatelessWidget {
             pointers: <GaugePointer>[
               RangePointer(
                 value: progress,
-                cornerStyle: CornerStyle.bothCurve,
+                cornerStyle: CornerStyle.bothFlat,
                 width: 0.15,
                 color: const Color(0xFF16B9ED),
                 sizeUnit: GaugeSizeUnit.factor,

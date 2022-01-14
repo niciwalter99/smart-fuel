@@ -30,7 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double drunken_water = 0000;
+  double drunken_water = 0;
   List<List<int>> lists = [];
 
   bool notification_listener_set = false;
@@ -76,13 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
             startOnBoot: true,
             requiredNetworkType: NetworkType.NONE), (String taskId) async {
       // <-- Event handler
-      print("[BackgroundFetch] Event received $taskId");
-      int drunkenWater = await MyApp.getDrinkData();
-      if (drunkenWater != -1) {
-        await HomeWidget.saveWidgetData<int>('_counter', drunkenWater);
-        await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
-      }
-
+     MyApp.backgroundConnect();
       BackgroundFetch.finish(taskId);
 
     }, (String taskId) async {
@@ -124,57 +118,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Null> _refreshLocalGallery() async {
-    FlutterBlue flutterBlue = FlutterBlue.instance;
-    //00001523-1212-efde-1523-785feabcd123
-    flutterBlue.startScan(withServices: [Guid("00001523-1212-efde-1523-785feabcd123")],timeout: Duration(seconds: 6));
-    BluetoothDevice? waterBottle;
-    receivingPacket = 1;
-    lists = [];
 
-    print(FlutterBlue.instance.state);
+ DayStats dayStats = await MyApp.getDrinkData();
+ if(dayStats.avgGulpSize != -1) {
+   drunken_water = dayStats.sumOfWater.toDouble();
 
-// Listen to scan results
-    var subscription = flutterBlue.scanResults.listen((results) {
-      // do something with scan results
-      for (ScanResult r in results) {
-        print(r.device);
-        print(r.device.id);
-        if (r.device.id.toString() == "C8:B7:77:63:9D:09") {
-          waterBottle = r.device;
-        }
-      }
-    });
-    await Future.delayed(const Duration(seconds: 6));
-    flutterBlue.stopScan();
+   await HomeWidget.saveWidgetData<int>('_counter', dayStats.sumOfWater);
+   await HomeWidget.updateWidget(
+       name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
 
-    // If device is found
-    if (waterBottle != null) {
-      print(waterBottle!.name);
-      await waterBottle!.connect();
+   setState(() {
 
-      List<BluetoothService> services = await waterBottle!.discoverServices();
-      print('Services');
-      print(services[2]);
-      BluetoothCharacteristic bottleData = services[2].characteristics[0];
-      await bottleData.setNotifyValue(true);
-
-      if (!notification_listener_set) {
-        _readData(bottleData);
-
-        notification_listener_set = true;
-      }
-
-      bottleData.write([2]);
-
-      // Wait until no Packet is received for 500ms
-      int i = 0;
-      while (receivingPacket > i) {
-        i = receivingPacket;
-        await Future.delayed(const Duration(milliseconds: 500));
-        i++;
-      }
-      waterBottle!.disconnect();
-    } else {
+   });
+  } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Gerät konnte nicht gefunden werden"),
       ));

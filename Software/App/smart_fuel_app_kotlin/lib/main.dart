@@ -19,11 +19,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     return;
   }
 
-  int drunkenWater = await MyApp.getDrinkData();
-  if (drunkenWater != -1) {
-    await HomeWidget.saveWidgetData<int>('_counter', drunkenWater);
-    await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
-  }
+  MyApp.backgroundConnect();
 
   BackgroundFetch.finish(task.taskId);
 }
@@ -38,14 +34,26 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static Future<int> getDrinkData() async {
+
+  static Future<void> backgroundConnect() async {
+    DayStats dayStats = await MyApp.getDrinkData();
+    if (dayStats.avgGulpSize != -1) {
+      NotificationService().init();
+      NotificationService().showNotificationWithNoBadge("Trinkerinnerung",
+          "Hey! Du hast heute erst ${dayStats.sumOfWater} ml getrunken...");
+
+      await HomeWidget.saveWidgetData<int>('_counter', dayStats.sumOfWater);
+      await HomeWidget.updateWidget(
+          name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+    } else {
+      NotificationService().init();
+      NotificationService().showNotificationWithNoBadge(
+          "Trinkerinnerung", "Hey! Deine Flasche wurde nicht gefunden");
+    }
+  }
+
+  static Future<DayStats> getDrinkData() async {
     FlutterBlue flutterBlue = FlutterBlue.instance;
-    print(flutterBlue);
-    print('Start Scan');
-    flutterBlue.startScan(
-        withServices: [Guid("00001523-1212-efde-1523-785feabcd123")],
-        timeout: const Duration(seconds: 10),
-        request_permission: false);
 
     BluetoothDevice? waterBottle;
     int receivingPacket = 1;
@@ -54,37 +62,50 @@ class MyApp extends StatelessWidget {
     bool scan_running = true;
     print(FlutterBlue.instance.state);
 
-    // Listen to scan results
-    var subscription = flutterBlue.scanResults.listen((results) {
-      // do something with scan results
-      print('in Subscription method');
-      for (ScanResult r in results) {
-        print("Found Something here");
-        if (r.device.id.toString() == "C8:B7:77:63:9D:09") {
-          waterBottle = r.device;
-          flutterBlue.stopScan();
-          scan_running = false;
-        }
+    List<BluetoothDevice> connectedDevices = await flutterBlue.connectedDevices;
+    bool alreadyConnected = false;
+    for (int i = 0; i < connectedDevices.length; i++) {
+      if (connectedDevices[i].id.toString() == "C8:B7:77:63:9D:09") {
+        waterBottle = connectedDevices[i];
+        alreadyConnected = true;
+        print('already connected');
+        break;
       }
-    });
-
-    Timer(const Duration(seconds: 15), () {
-      scan_running = false;
-      flutterBlue.stopScan();
-      subscription.cancel();
-    });
-
-    while (scan_running) {
-      await Future.delayed(const Duration(seconds: 1));
     }
 
-    print("end of scan");
+    if (!alreadyConnected) {
+      print('Start Scan');
+      flutterBlue.startScan(
+          withServices: [Guid("00001523-1212-efde-1523-785feabcd123")],
+          timeout: const Duration(seconds: 10),
+          allowDuplicates: true,
+          request_permission: false);
 
-    List<BluetoothDevice> connectedDevices = await flutterBlue.connectedDevices;
-    print(connectedDevices);
-    for (int i = 0; i < connectedDevices.length; i++) {
-      print("Disconnect device ${connectedDevices[i].name}");
-      connectedDevices[i].disconnect();
+      // Listen to scan results
+      var subscription = flutterBlue.scanResults.listen((results) {
+        // do something with scan results
+        print('in Subscription method');
+        for (ScanResult r in results) {
+          print("Found Something here");
+          if (r.device.id.toString() == "C8:B7:77:63:9D:09") {
+            waterBottle = r.device;
+            flutterBlue.stopScan();
+            scan_running = false;
+          }
+        }
+      });
+
+      Timer(const Duration(seconds: 15), () {
+        scan_running = false;
+        flutterBlue.stopScan();
+        subscription.cancel();
+      });
+
+      while (scan_running) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
+
+      print("end of scan");
     }
 
     _readData(characteristic) async {
@@ -99,7 +120,10 @@ class MyApp extends StatelessWidget {
     // If device is found
     if (waterBottle != null) {
       print(waterBottle!.name);
-      await waterBottle!.connect();
+
+      if (!alreadyConnected) {
+        await waterBottle!.connect();
+      }
 
       List<BluetoothService> services = await waterBottle!.discoverServices();
       // print('Services');
@@ -129,15 +153,10 @@ class MyApp extends StatelessWidget {
       print('Water drunk today is: ');
       print(dayStats.sumOfWater);
 
-      NotificationService().init();
-      NotificationService().showNotificationWithNoBadge("Trinkerinnerung",
-          "Hey! Du hast heute erst ${dayStats.sumOfWater} ml getrunken...");
-      return dayStats.sumOfWater;
+      return dayStats;
     } else {
-      NotificationService().init();
-      NotificationService().showNotificationWithNoBadge(
-          "Trinkerinnerung", "Hey! Deine Flasche wurde nicht gefunden");
-      return -1;
+      return DayStats(
+          sumOfWater: -1, bottleFillUp: -1, nipCounter: -1, avgGulpSize: -1);
     }
   }
 
