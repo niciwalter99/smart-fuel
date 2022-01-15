@@ -8,6 +8,13 @@ class CircularStatus extends StatelessWidget {
   final double padding;
   final double width;
 
+  CornerStyle getStyle(double progress) {
+    if(progress < 2000) {
+      return CornerStyle.bothCurve;
+    }
+    return  CornerStyle.bothFlat;
+  }
+
   CircularStatus({Key? key, required this.progress, required this.child, required this.height, required this.width, required this.padding});
 
   @override
@@ -33,7 +40,8 @@ class CircularStatus extends StatelessWidget {
             pointers: <GaugePointer>[
               RangePointer(
                 value: progress,
-                cornerStyle: CornerStyle.bothFlat,
+                cornerStyle: getStyle(progress),
+                enableAnimation: true,
                 width: 0.15,
                 color: const Color(0xFF16B9ED),
                 sizeUnit: GaugeSizeUnit.factor,

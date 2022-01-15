@@ -19,6 +19,8 @@ import 'dart:async';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:home_widget/home_widget.dart';
+import "package:smart_fuel_app_kotlin/Database/database.dart";
+import "package:smart_fuel_app_kotlin/Database/stats.dart";
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -33,21 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
   double drunken_water = 0;
   List<List<int>> lists = [];
 
-  bool notification_listener_set = false;
+  bool callbackRegistered = false;
   int receivingPacket = 1;
 
   int _status = 0;
   List<DateTime> _events = [];
   int _counter = 0;
 
-  _readData(characteristic) async {
-    characteristic.value.listen((value) {
-      lists.add(value);
-      receivingPacket++;
-      print(value.length);
-      print(value);
-    });
-  }
 
   void loadData() async {
     await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0).then((value) {
@@ -120,15 +114,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Null> _refreshLocalGallery() async {
 
  DayStats dayStats = await MyApp.getDrinkData();
+
  if(dayStats.avgGulpSize != -1) {
    drunken_water = dayStats.sumOfWater.toDouble();
-
+   //DBProvider.db.newClient(Client(id: 2, firstName: "Nici", lastName: "Walter"));
+   Client c = await DBProvider.db.getClient(2);
+  print(c.firstName);
    await HomeWidget.saveWidgetData<int>('_counter', dayStats.sumOfWater);
    await HomeWidget.updateWidget(
        name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
 
    setState(() {
-
    });
   } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -159,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularStatus(
-                      progress: 600,
+                      progress: 2400,
                       height: 70,
                       padding: 5,
                       width: 50,

@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
         waterBottle = connectedDevices[i];
         alreadyConnected = true;
         print('already connected');
+        await waterBottle.connect();
         break;
       }
     }
@@ -108,15 +109,6 @@ class MyApp extends StatelessWidget {
       print("end of scan");
     }
 
-    _readData(characteristic) async {
-      characteristic.value.listen((value) {
-        lists.add(value);
-        receivingPacket++;
-        print(value.length);
-        print(value);
-      });
-    }
-
     // If device is found
     if (waterBottle != null) {
       print(waterBottle!.name);
@@ -129,7 +121,13 @@ class MyApp extends StatelessWidget {
       // print('Services');
       BluetoothCharacteristic bottleData = services[2].characteristics[0];
       await bottleData.setNotifyValue(true);
-      _readData(bottleData);
+
+      var s = bottleData.value.listen((value) {
+        lists.add(value);
+        receivingPacket++;
+        print(value.length);
+        print(value);
+      });
 
       bottleData.write([2]);
 
@@ -139,6 +137,26 @@ class MyApp extends StatelessWidget {
         i = receivingPacket;
         await Future.delayed(const Duration(milliseconds: 500));
         i++;
+      }
+      s.cancel();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? lastDelete = prefs.getString("last_delete");
+
+      DateTime date(DateTime dateTime) =>
+          DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+      if(lastDelete != null) {
+        DateTime lastDeleteDay = DateTime.parse(lastDelete);
+        if (date(DateTime.now()).difference(date(lastDeleteDay)).inHours > 0) {
+         print("delete now");
+         prefs.setString("last_delete", DateTime.now().toString());
+         bottleData.write([3]); // Delete Data on Bottle
+        }
+      }
+      else {
+        print("Last Delete Value is null");
+        prefs.setString("last_delete", DateTime.now().toString());
+        bottleData.write([3]); // Delete Data on Bottle
       }
       waterBottle!.disconnect();
     }

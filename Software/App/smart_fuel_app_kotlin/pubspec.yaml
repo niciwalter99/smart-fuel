@@ -57,6 +57,8 @@ dev_dependencies:
   shared_preferences: ^2.0.6
   background_fetch: ^1.0.3
   home_widget: ^0.1.5
+  sqflite: ^2.0.2
+  path_provider: ^2.0.8
 
 flutter_icons:
   android: true
