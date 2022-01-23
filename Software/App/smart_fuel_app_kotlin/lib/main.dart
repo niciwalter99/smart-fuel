@@ -162,7 +162,7 @@ class MyApp extends StatelessWidget {
     }
     print('END OF connection!');
 
-    if (!lists.isEmpty) {
+    if (lists.isNotEmpty) {
       print("List is not empty!");
       Data data = Data();
       data.calculateCluster(4, 6, lists.expand((i) => i).toList());
@@ -173,6 +173,7 @@ class MyApp extends StatelessWidget {
 
       return dayStats;
     } else {
+      print("List is empty!");
       return DayStats(
           sumOfWater: -1, bottleFillUp: -1, nipCounter: -1, avgGulpSize: -1);
     }
